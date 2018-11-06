@@ -4,21 +4,17 @@
 
 #include <string>
 #include "HttpHeader.h"
+#include "Request.h"
 
 #ifndef HTTP_SOCKET_PROGRAMMING_GETREQUEST_H
 #define HTTP_SOCKET_PROGRAMMING_GETREQUEST_H
 
-class GetRequest
+class GetRequest: public Request
 {
-    private:
-        HttpHeader request_header;
-        std::string file_name;
     public:
         GetRequest(HttpHeader header);
-        void set_request_header(HttpHeader header);
-        HttpHeader get_http_header();
-        void set_file_name(std::string file_name);
-        std::string get_file_name();
+//        void set_content(std::string content) override;
+//        std::string get_content() override;
 };
 
 #endif //HTTP_SOCKET_PROGRAMMING_GETREQUEST_H

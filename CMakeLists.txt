@@ -20,4 +20,6 @@ add_executable(run client/WebClient.cpp
                     server/HttpHeader.h
                     server/GetRequest.cpp
                     server/PostRequest.cpp
+                    server/Request.h
+                    server/Request.cpp
                     main.cpp)

@@ -6,7 +6,7 @@
 
 using namespace std;
 
-PostRequest::PostRequest(HttpHeader header) : GetRequest(header)
+PostRequest::PostRequest(HttpHeader header) : Request(header)
 {}
 
 void PostRequest::set_content(string content)
