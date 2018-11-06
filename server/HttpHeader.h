@@ -7,8 +7,6 @@
 #ifndef UNTITLED_HTTPHEADER_H
 #define UNTITLED_HTTPHEADER_H
 
-#endif //UNTITLED_HTTPHEADER_H
-
 class HttpHeader
 {
     public:
@@ -21,3 +19,5 @@ class HttpHeader
         std::string keep_alive;
         std::string connection;
 };
+
+#endif //UNTITLED_HTTPHEADER_H

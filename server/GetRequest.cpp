@@ -7,7 +7,7 @@
 using namespace std;
 
 
-GetRequest::GetRequest()
+GetRequest::GetRequest(HttpHeader header) : request_header(header)
 {
 
 }
