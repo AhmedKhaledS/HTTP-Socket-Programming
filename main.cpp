@@ -7,6 +7,9 @@
 #include "server/PostRequest.h"
 #include "server/RequestParser.h"
 #include "server/WebServer.h"
+#include "fileServices/FileReader.h"
+#include "fileServices/FileWriter.h"
+
 
 using namespace std;
 
@@ -44,6 +47,13 @@ int main(int argc, char **argv)
 //    cout << "content: " + post_test->get_content() << endl;
 //    cout << "file_name: " + post_test->get_file_name() << endl;
 
-    WebServer server(8080);
-    server.start();
+//    WebServer server(8080);
+//    server.start();
+
+    FileReader* file_reader = new FileReader();
+    FileWriter* file_writer = new FileWriter();
+
+    string content = file_reader->read_file("../Resources/html_version.html");
+    file_writer->write_file("../Resources/html_version_test.html", content);
+
 }

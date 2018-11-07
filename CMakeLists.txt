@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.9)
 project(http_client_server)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -13,8 +13,7 @@ add_executable(run client/WebClient.cpp
                     server/RequestParser.h
                     server/WebServer.cpp
                     server/WebServer.h
-                    fileServices/FileHandler.cpp
-                    fileServices/FileHandler.h
+        fileServices/FileHandler.h
                     fileServices/FileReader.cpp
                     fileServices/FileReader.h
                     fileServices/FileWriter.cpp
