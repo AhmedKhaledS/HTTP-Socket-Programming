@@ -3,15 +3,15 @@
 //
 
 #include "GetRequest.h"
-#include "Request.h"
+#include "GetRequest.h"
 
 #ifndef HTTP_SOCKET_PROGRAMMING_POSTREQUEST_H
 #define HTTP_SOCKET_PROGRAMMING_POSTREQUEST_H
 
-class PostRequest: public Request
+class PostRequest: public GetRequest
 {
     public:
-        PostRequest(HttpHeader header);
+        PostRequest(HttpHeader header, std::string file_name);
         void set_content(std::string content) override;
         std::string get_content() override;
 };

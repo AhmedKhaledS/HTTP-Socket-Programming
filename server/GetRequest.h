@@ -1,20 +1,28 @@
 //
-// Created by ahmed on 11/6/18.
+// Created by ahmed on 11/7/18.
 //
 
-#include <string>
-#include "HttpHeader.h"
-#include "Request.h"
+#ifndef HTTP_CLIENT_SERVER_REQUEST_H
+#define HTTP_CLIENT_SERVER_REQUEST_H
 
-#ifndef HTTP_SOCKET_PROGRAMMING_GETREQUEST_H
-#define HTTP_SOCKET_PROGRAMMING_GETREQUEST_H
+#include "util/HttpHeader.h"
 
-class GetRequest: public Request
+class GetRequest
 {
+    protected:
+        std::string content;
+    private:
+        HttpHeader request_header;
+        std::string file_name;
     public:
-        GetRequest(HttpHeader header);
-//        void set_content(std::string content) override;
-//        std::string get_content() override;
+        GetRequest(HttpHeader header, std::string file_name);
+        void set_request_header(HttpHeader header);
+        HttpHeader get_http_header();
+        void set_file_name(std::string file_name);
+        std::string get_file_name();
+        virtual std::string get_content();
+        virtual void set_content(std::string content);
 };
 
-#endif //HTTP_SOCKET_PROGRAMMING_GETREQUEST_H
+
+#endif //HTTP_CLIENT_SERVER_REQUEST_H

@@ -5,14 +5,27 @@
 #ifndef HTTP_SOCKET_PROGRAMMING_REQUESTPARSER_H
 #define HTTP_SOCKET_PROGRAMMING_REQUESTPARSER_H
 
-#include "Request.h"
+#include <vector>
+#include <map>
+#include "GetRequest.h"
 #include "GetRequest.h"
 
 class RequestParser
 {
+    private:
+        std::vector<std::string> request_message;
+        std::string request_type;
+        std::map<std::string, std::string> header_attributes;
+        std::string requested_file_name;
+        std::string connection_type;
+
+        GetRequest* get_specified_request();
     public:
-        RequestParser(std::string message);
-        Request* parse();
+        RequestParser(std::vector<std::string> message);
+        GetRequest* parse();
+        std::string get_request_type();
+        std::string get_request_file_name();
+        std::string get_connection_type();
 };
 
 #endif //HTTP_SOCKET_PROGRAMMING_REQUESTPARSER_H

@@ -3,6 +3,7 @@
 //
 
 #include <string>
+#include <map>
 
 #ifndef UNTITLED_HTTPHEADER_H
 #define UNTITLED_HTTPHEADER_H
@@ -10,6 +11,8 @@
 class HttpHeader
 {
     public:
+        HttpHeader();
+        HttpHeader(std::map<std::string, std::string> header_attributes);
         std::string host;
         std::string user_agent;
         std::string accept;

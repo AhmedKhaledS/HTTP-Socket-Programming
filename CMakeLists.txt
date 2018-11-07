@@ -5,8 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(run client/WebClient.cpp
                     client/WebClient.h
-                    server/GetRequest.h
-                    server/PostRequest.h
+        server/PostRequest.h
                     server/RequestParser.cpp
                     server/RequestParser.h
                     server/WebServer.cpp
@@ -17,9 +16,8 @@ add_executable(run client/WebClient.cpp
                     fileServices/FileReader.h
                     fileServices/FileWriter.cpp
                     fileServices/FileWriter.h
-                    server/HttpHeader.h
-                    server/GetRequest.cpp
-                    server/PostRequest.cpp
-                    server/Request.h
-                    server/Request.cpp
-                    main.cpp)
+        server/util/HttpHeader.h
+        server/PostRequest.cpp
+        server/GetRequest.h
+        server/GetRequest.cpp
+                    main.cpp server/util/Constants.h server/util/Constants.cpp server/util/HttpHeader.cpp)
