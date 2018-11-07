@@ -7,8 +7,8 @@
 
 #include <vector>
 #include <map>
-#include "GetRequest.h"
-#include "GetRequest.h"
+#include "Request.h"
+#include "Request.h"
 
 class RequestParser
 {
@@ -19,10 +19,10 @@ class RequestParser
         std::string requested_file_name;
         std::string connection_type;
 
-        GetRequest* get_specified_request();
+        Request* get_specified_request();
     public:
         RequestParser(std::vector<std::string> message);
-        GetRequest* parse();
+        Request* parse();
         std::string get_request_type();
         std::string get_request_file_name();
         std::string get_connection_type();

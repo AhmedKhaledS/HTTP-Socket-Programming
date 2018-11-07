@@ -18,6 +18,6 @@ add_executable(run client/WebClient.cpp
                     fileServices/FileWriter.h
         server/util/HttpHeader.h
         server/PostRequest.cpp
-        server/GetRequest.h
-        server/GetRequest.cpp
-                    main.cpp server/util/Constants.h server/util/Constants.cpp server/util/HttpHeader.cpp)
+        server/Request.h
+        server/Request.cpp
+                    main.cpp server/util/Constants.h server/util/Constants.cpp server/util/HttpHeader.cpp server/GetRequest.cpp server/GetRequest.h)

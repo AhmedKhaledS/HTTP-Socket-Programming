@@ -8,13 +8,14 @@
 #include <iostream>
 #include "RequestParser.h"
 #include "PostRequest.h"
+#include "GetRequest.h"
 
 using namespace std;
 
 RequestParser::RequestParser(vector<string> message): request_message(message)
 {}
 
-GetRequest* RequestParser::parse()
+Request* RequestParser::parse()
 {
     for (string line : this->request_message)
     {
@@ -27,16 +28,17 @@ GetRequest* RequestParser::parse()
             this->requested_file_name = splited_line[1];
             this->connection_type = splited_line[2];
         }
-        else
+        else {
             header_attributes[splited_line[0].substr(0, splited_line[0].length()-1)] = splited_line.back();
+        }
     }
-    return this->get_specified_request();
+    return get_specified_request();
 }
 
-GetRequest* RequestParser::get_specified_request()
+Request* RequestParser::get_specified_request()
 {
-    GetRequest* request;
-    if (this->request_type == "GET")
+    Request* request;
+    if (request_type == "GET")
     {
         request = new GetRequest(this->header_attributes, this->requested_file_name);
     }
