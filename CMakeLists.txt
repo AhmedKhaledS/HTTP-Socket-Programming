@@ -3,6 +3,9 @@ project(http_client_server)
 
 set(CMAKE_CXX_STANDARD 17)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread")
+
+
 add_executable(run client/WebClient.cpp
                     client/WebClient.h
         server/PostRequest.h
@@ -20,4 +23,4 @@ add_executable(run client/WebClient.cpp
         server/PostRequest.cpp
         server/Request.h
         server/Request.cpp
-                    main.cpp server/util/Constants.h server/util/Constants.cpp server/util/HttpHeader.cpp server/GetRequest.cpp server/GetRequest.h)
+                    main.cpp server/util/Constants.h server/util/Constants.cpp server/util/HttpHeader.cpp server/GetRequest.cpp server/GetRequest.h server/ConnectionHandler.h server/ConnectionHandler.cpp server/ConnectionsTracker.cpp server/ConnectionsTracker.h)
