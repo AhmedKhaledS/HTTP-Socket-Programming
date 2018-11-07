@@ -25,26 +25,12 @@ GetRequest* RequestParser::parse()
         {
             this->request_type = splited_line[0];
             this->requested_file_name = splited_line[1];
-            this->connection_type = splited_line.back();
+            this->connection_type = splited_line[2];
         }
         else
             header_attributes[splited_line[0].substr(0, splited_line[0].length()-1)] = splited_line.back();
     }
     return this->get_specified_request();
-
-/*    HttpHeader x;
-    x.accept = "Accept";
-    x.host = "Host";
-    x.user_agent = "User-Agent";
-    x.accept_language = "Accept-Language";
-    x.accept_encoding = "Accept-Encoding";
-    x.accept_charset = "Accept-Charset";
-    x.keep_alive = "Keep-Alive";
-    x.connection = "Connection";
-    GetRequest *get = new GetRequest(x);
-    get->set_file_name("test.txt");
-    get->set_content("This is a testing content.");
-    return get;*/
 }
 
 GetRequest* RequestParser::get_specified_request()
