@@ -28,7 +28,8 @@ Request* RequestParser::parse()
             this->requested_file_name = splited_line[1];
             this->connection_type = splited_line[2];
         }
-        else {
+        else
+        {
             header_attributes[splited_line[0].substr(0, splited_line[0].length()-1)] = splited_line.back();
         }
     }

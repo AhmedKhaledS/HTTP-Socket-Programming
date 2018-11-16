@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 //    post.set_content("This is a testing content.");
 //    cout << post.get_file_name() << "   " << post.get_http_header().accept << "  " << post.get_content() << endl;
 
-    RequestParser requestParser(vector<string>({"PUT /index.html HTTP/1.1", "Host: www-net.cs.umass.edu",
+    RequestParser requestParser(vector<string>({"GET /index.html HTTP/1.1", "Host: www-net.cs.umass.edu",
                                 "User-Agent: Firefox/3.6.10",
                                 "Accept: text/html,application/xhtml+xml",
                                 "Accept-Language: en-us,en;q=0.5",
