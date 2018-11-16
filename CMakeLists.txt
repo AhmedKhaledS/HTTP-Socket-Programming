@@ -5,21 +5,33 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread")
 
+find_package(Boost COMPONENTS system filesystem REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
 
 add_executable(run client/WebClient.cpp
                     client/WebClient.h
-        server/PostRequest.h
+                    server/PostRequest.h
                     server/RequestParser.cpp
                     server/RequestParser.h
                     server/WebServer.cpp
                     server/WebServer.h
-        fileServices/FileHandler.h
+                     fileServices/FileHandler.h
                     fileServices/FileReader.cpp
                     fileServices/FileReader.h
                     fileServices/FileWriter.cpp
                     fileServices/FileWriter.h
-        server/util/HttpHeader.h
-        server/PostRequest.cpp
-        server/Request.h
-        server/Request.cpp
-                    main.cpp server/util/Constants.h server/util/Constants.cpp server/util/HttpHeader.cpp server/GetRequest.cpp server/GetRequest.h server/ConnectionHandler.h server/ConnectionHandler.cpp server/ConnectionsTracker.cpp server/ConnectionsTracker.h)
+                    server/util/HttpHeader.h
+                    server/PostRequest.cpp
+                    server/Request.h
+                    server/Request.cpp
+                    main.cpp server/util/Constants.h
+                    server/util/Constants.cpp
+                    server/util/HttpHeader.cpp
+                    server/GetRequest.cpp
+                    server/GetRequest.h
+                    server/ConnectionHandler.h
+                    server/ConnectionHandler.cpp
+                    server/ConnectionsTracker.cpp
+                    server/ConnectionsTracker.h)
+
+target_link_libraries(run ${Boost_LIBRARIES} -lrt)

@@ -10,22 +10,28 @@
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <netinet/in.h>
-#include <string.h>
-
 #include <vector>
-#include <pthread.h>
-#include <thread>
+
+#include <string.h>
+#include <sys/ipc.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include <iostream>
 
-using namespace std;
+
+using namespace boost::interprocess;
 
 const int MAX_QUEUE_SIZE = 10;
+
+
 
 WebServer::WebServer(int port_number) : port_number(port_number)
 {}
 
 void WebServer::start()
 {
+    initialize_shared_memory();
+
     int server_fd, new_socket;
     struct sockaddr_in address;
     int addrlen = sizeof(address);
@@ -48,8 +54,7 @@ void WebServer::start()
     address.sin_port = htons( this->port_number );
 
     // Forcefully attaching socket to the port 8080
-    if (bind(server_fd, (struct sockaddr *)&address,
-             sizeof(address))<0)
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0)
     {
         perror("bind failed");
         exit(EXIT_FAILURE);
@@ -59,6 +64,8 @@ void WebServer::start()
         perror("listen");
         exit(EXIT_FAILURE);
     }
+
+
     while (true)
     {
         if ((new_socket = accept(server_fd, (struct sockaddr *) &address,
@@ -68,8 +75,42 @@ void WebServer::start()
             exit(EXIT_FAILURE);
         }
         ConnectionHandler connection_handler = ConnectionHandler();
-        thread connection_thread(&ConnectionHandler::handle, connection_handler, new_socket);
-        connection_thread.join(); // TODO : Should not wait for this to finish
+        int pid = fork();
+        if (pid == 0)
+        {
+            // Child
+            connection_handler.handle(new_socket);
+
+        } else {
+            // Parent
+//            this->child_pids.push_back(pid);
+            std::cout << "Reached Parent" << std::endl;
+
+        }
+        // Destroy the created segment.
+        segment->destroy<shared_vector>("shared_vector");
+        delete segment;
         // TODO : Should add Heuristic to close connections.
     }
+}
+
+void WebServer::initialize_shared_memory()
+{
+    //Remove shared memory on construction and destruction
+    struct shm_remove
+    {
+        shm_remove() { shared_memory_object::remove("MySharedMemory"); }
+        ~shm_remove(){ shared_memory_object::remove("MySharedMemory"); }
+    } remover;
+
+    //Create a new segment with given name and size
+    segment = new managed_shared_memory(create_only, "MySharedMemory", 65536);
+
+    //Initialize shared memory STL-compatible allocator
+    const ShmemAllocator alloc_inst (segment->get_segment_manager());
+
+    //Construct a vector named "shared_vector" in shared memory with argument alloc_inst
+    shared_vector *myvector = segment->construct<shared_vector>("shared_vector")(alloc_inst);
+
+    // If we want to deal with this vector, code goes here.
 }

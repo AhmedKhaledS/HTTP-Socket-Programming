@@ -8,32 +8,20 @@ using namespace std;
 
 const int MAX_CONNECTIONS = 100;
 
-int ConnectionsTracker::connections_count = 0;
-mutex ConnectionsTracker::lock;
 
-void ConnectionsTracker::increment_connections()
+void ConnectionsTracker::update_last_transaction_time(int pid)
 {
-    ConnectionsTracker::lock.lock();
-    ConnectionsTracker::connections_count++;
-    ConnectionsTracker::lock.unlock();
+
 }
 
-void ConnectionsTracker::decrement_connections()
+int ConnectionsTracker::get_least_recently_used_pid()
 {
-    ConnectionsTracker::lock.lock();
-    ConnectionsTracker::connections_count--;
-    ConnectionsTracker::lock.unlock();
+
 }
 
-bool ConnectionsTracker::check_connections()
+bool ConnectionsTracker::insert_process(int pid)
 {
-    ConnectionsTracker::lock.lock();
-    if (ConnectionsTracker::connections_count > MAX_CONNECTIONS)
-    {
-        ConnectionsTracker::connections_count--;
-        ConnectionsTracker::lock.unlock();
-        return false;
-    }
-    ConnectionsTracker::lock.unlock();
-    return true;
+
 }
+
+
