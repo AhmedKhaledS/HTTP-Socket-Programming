@@ -1,7 +1,10 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.9)
 project(http_client_server)
 
 set(CMAKE_CXX_STANDARD 17)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread")
+
 
 add_executable(run client/WebClient.cpp
                     client/WebClient.h
@@ -10,8 +13,7 @@ add_executable(run client/WebClient.cpp
                     server/RequestParser.h
                     server/WebServer.cpp
                     server/WebServer.h
-                    fileServices/FileHandler.cpp
-                    fileServices/FileHandler.h
+        fileServices/FileHandler.h
                     fileServices/FileReader.cpp
                     fileServices/FileReader.h
                     fileServices/FileWriter.cpp
@@ -20,4 +22,4 @@ add_executable(run client/WebClient.cpp
         server/PostRequest.cpp
         server/Request.h
         server/Request.cpp
-                    main.cpp server/util/Constants.h server/util/Constants.cpp server/util/HttpHeader.cpp server/GetRequest.cpp server/GetRequest.h)
+                    main.cpp server/util/Constants.h server/util/Constants.cpp server/util/HttpHeader.cpp server/GetRequest.cpp server/GetRequest.h server/ConnectionHandler.h server/ConnectionHandler.cpp server/ConnectionsTracker.cpp server/ConnectionsTracker.h)
