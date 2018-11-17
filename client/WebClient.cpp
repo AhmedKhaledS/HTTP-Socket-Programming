@@ -30,7 +30,7 @@ void WebClient::post_file(std::string file_path, int socket_fd) {
 void WebClient::send_requests(std::string requests_file_name, std::string host_name, int port_number,
                               CONNECTION_TYPE connection_type) {
     vector<RequestCommand> requests = parse_request_commands_file(requests_file_name);
-
+    send_requests_non_persistent(requests, host_name, port_number);
 }
 
 std::vector<RequestCommand> WebClient::parse_request_commands_file(std::string file_name) {
@@ -73,12 +73,15 @@ RequestCommand WebClient::parse_request_command_line(std::string request_line) {
 void
 WebClient::send_requests_non_persistent(std::vector<RequestCommand> commands, std::string host_name, int port_number) {
     char buffer[MAX_BUFF_SIZE] = {0};
-    for (auto command : commands)
+//    for (auto command : commands)
     {
         /// TODO use which hostname and port number !
         int socket = connect(host_name, port_number);
         /// TODO : Fill in buffer
-        send(socket, buffer, strlen(buffer), 0);
+        char* request = "GET /kurose_ross/interactive/quotation1.htm HTTP/1.0\r\n"
+                        "Host: gaia.cs.umass.edu\r\n"
+                        "\r\n";
+        send(socket, request, strlen(request), 0);
         /// TODO : close Socket
     }
 }
