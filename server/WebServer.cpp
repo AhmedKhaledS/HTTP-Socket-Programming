@@ -28,8 +28,15 @@ WebServer::WebServer(int port_number) : port_number(port_number)
 
 void WebServer::start()
 {
-    shared_vector *running_processes = initialize_shared_memory();
+    //Remove shared memory on construction and destruction
+    struct shm_remove
+    {
+        shm_remove() { shared_memory_object::remove("SharedMemory"); }
+        ~shm_remove(){ shared_memory_object::remove("SharedMemory"); }
+    } remover;
 
+    shared_vector *running_processes = initialize_shared_memory();
+    std::cout << "Running processes address: " << running_processes << std::endl;
     int server_fd, new_socket;
     struct sockaddr_in address;
     int addrlen = sizeof(address);
@@ -41,8 +48,9 @@ void WebServer::start()
         exit(EXIT_FAILURE);
     }
 
-    int true_ = 1;
-    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR,&true_,sizeof(int)) == -1)
+    int opt = 1;
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
+                   &opt, sizeof(opt)))
     {
         perror("Setsockopt");
         exit(1);
@@ -77,34 +85,27 @@ void WebServer::start()
         if (pid == 0)
         {
             // Child
+            std::cout << "Child is reached." << std::endl;
             connection_handler.handle(new_socket);
-
         } else {
             // Parent
-//            this->child_pids.push_back(pid);
+            running_processes->push_back({pid, static_cast<long long>(time(NULL))});
             sleep(5);
             std::cout << "Reached Parent" << std::endl;
-            for (auto process : *running_processes)
-            {
-                std::cout << "--Parent-- PID: " << process.first << " | Last Request Time: " << process.second << std::endl;
-            }
+//            for (auto process : *running_processes)
+//            {
+//                std::cout << "--Parent-- PID: " << process.first << " | Last Request Time: " << process.second << std::endl;
+//            }
         }
         // Destroy the created segment.
-        segment->destroy<shared_vector>("shared_vector");
-        delete segment;
         // TODO : Should add Heuristic to close connections.
     }
+//    segment->destroy<shared_vector>("shared_vector");
+//    delete segment;
 }
 
 shared_vector* WebServer::initialize_shared_memory()
 {
-    //Remove shared memory on construction and destruction
-    struct shm_remove
-    {
-        shm_remove() { shared_memory_object::remove("SharedMemory"); }
-        ~shm_remove(){ shared_memory_object::remove("SharedMemory"); }
-    } remover;
-
     //Create a new segment with given name and size
     segment = new managed_shared_memory(create_only, "SharedMemory", 65536);
 

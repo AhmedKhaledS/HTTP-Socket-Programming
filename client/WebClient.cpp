@@ -12,6 +12,7 @@
 #include <arpa/inet.h>
 
 #include "StringUtils.h"
+#include <unistd.h>
 
 #define MAX_BUFF_SIZE 1024
 
@@ -82,7 +83,13 @@ WebClient::send_requests_non_persistent(std::vector<RequestCommand> commands, st
                         "Host: gaia.cs.umass.edu\r\n"
                         "\r\n";
         send(socket, request, strlen(request), 0);
+        sleep(2);
+        char* request2 = "GET /kurose_ross/interactive/quotation1.htm HTTP/1.0\r\n"
+                        "Host: gaia.cs.umass.edu\r\n"
+                        "\r\n";
+        send(socket, request2, strlen(request), 0);
         /// TODO : close Socket
+        sleep(10);
     }
 }
 
