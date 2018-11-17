@@ -14,6 +14,7 @@
 #include "StringUtils.h"
 #include <unistd.h>
 #include "RequestBuilder.h"
+#include "response/ResponseHandler.h"
 
 #define MAX_BUFF_SIZE 1024
 
@@ -30,7 +31,7 @@ void WebClient::post_file(std::string file_path, int socket_fd) {
 }
 
 std::string WebClient::receive_response(int socket) {
-    char buffer[MAX_BUFF_SIZE];
+    char buffer[MAX_BUFF_SIZE] = {0};
     recv(socket, buffer, strlen(buffer), 0);
     return string(buffer);
 }
@@ -39,7 +40,7 @@ void WebClient::send_requests(std::string requests_file_name, std::string host_n
                               CONNECTION_TYPE connection_type) {
     vector<RequestCommand> requests = parse_request_commands_file(requests_file_name);
     vector<string> request_messages = build_request_messages(requests);
-    send_requests_non_persistent(request_messages, host_name, port_number);
+    send_requests_non_persistent(request_messages, requests, host_name, port_number);
 }
 
 std::vector<std::string> WebClient::build_request_messages(std::vector<RequestCommand> commands) {
@@ -55,7 +56,7 @@ std::vector<std::string> WebClient::build_request_messages(std::vector<RequestCo
 std::vector<RequestCommand> WebClient::parse_request_commands_file(std::string file_name) {
     FileReader* file_reader = new FileReader();
     string content = file_reader->read_file(file_name);
-    vector<string> request_lines = split_string(content, '\n');
+    vector<string> request_lines = split_string(content, "\n");
     vector<RequestCommand> request_commands;
     for (auto request_line : request_lines)
     {
@@ -66,7 +67,7 @@ std::vector<RequestCommand> WebClient::parse_request_commands_file(std::string f
 }
 
 RequestCommand WebClient::parse_request_command_line(std::string request_line) {
-    vector<string> args = split_string(request_line, ' ');
+    vector<string> args = split_string(request_line, " ");
     if (args.size() < 3)
     {
         perror("INVALID NUMBER OF ARGUMENTS");
@@ -89,35 +90,27 @@ RequestCommand WebClient::parse_request_command_line(std::string request_line) {
     return request_command;
 }
 
-void
-WebClient::send_requests_non_persistent(std::vector<std::string> request_messages, std::string host_name, int port_number) {
-//    for (string message : request_messages)
-//    {
+void WebClient::send_requests_non_persistent(std::vector<std::string> request_messages, std::vector<RequestCommand> commands,
+        std::string host_name, int port_number) {
+    int commands_index = 0;
+    for (string message : request_messages)
+    {
         int socket = connect(host_name, port_number);
-        /// TODO : Fill in buffer
-        char* request = "GET /html_version.html HTTP/1.0\r\n"
-                        "Host: gaia.cs.umass.edu\r\n"
-                        "\r\n";
-    
-        send(socket, request, strlen(request), 0);
-//        sleep(2);
-//        char* request2 = "GET /kurose_ross/interactive/quotation2.htm HTTP/1.0\r\n"
-//                        "Host: gaia.cs.umass.edu\r\n"
-//                        "\r\n";
-//        send(socket, request2, strlen(request), 0);
-        /// TODO : close Socket
-        sleep(10);
-//        send(socket, message.c_str(), strlen(message.c_str()), 0);
-//        string response = receive_response(socket);
-//        cout << "RESPONSE FOR " << message << "\n====\n" << response << endl;
-//    }
+        send(socket, message.c_str(), strlen(message.c_str()), 0);
+        string response = receive_response(socket);
+        ResponseHandler response_handler = ResponseHandler();
+        response_handler.handle_response(response, commands[commands_index].getType(), commands[commands_index].getFile_name());
+        cout << "RESPONSE FOR " << message << "\n====\n" << response << endl;
+    }
 }
 
-void WebClient::send_requests_persistent(std::vector<RequestCommand> commands, std::string host_name, int port_number) {
+void WebClient::send_requests_persistent(std::vector<std::string> request_messages, std::vector<RequestCommand> commands,
+                                         std::string host_name, int port_number) {
 
 }
 
-void WebClient::send_requests_pipelined(std::vector<RequestCommand> commands, std::string host_name, int port_number) {
+void WebClient::send_requests_pipelined(std::vector<std::string> request_messages, std::vector<RequestCommand> commands,
+                                        std::string host_name, int port_number) {
 
 }
 

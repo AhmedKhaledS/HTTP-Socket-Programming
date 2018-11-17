@@ -72,7 +72,8 @@ private:
      * @param host_name name of host
      * @param port_number port number
      */
-    void send_requests_non_persistent(std::vector<std::string> request_messages, std::string host_name, int port_number);
+    void send_requests_non_persistent(std::vector<std::string> request_messages, std::vector<RequestCommand> commands,
+            std::string host_name, int port_number);
 
     /**
      * Connects to a server on given host and port and sends requests using non-persistent connections.
@@ -80,7 +81,8 @@ private:
      * @param host_name name of host
      * @param port_number port number
      */
-    void send_requests_persistent(std::vector<RequestCommand> commands, std::string host_name, int port_number);
+    void send_requests_persistent(std::vector<std::string> request_messages, std::vector<RequestCommand> commands,
+                                  std::string host_name, int port_number);
 
     /**
      * Connects to a server on given host and port and sends requests using pipelining.
@@ -88,7 +90,8 @@ private:
      * @param host_name name of host
      * @param port_number port number
      */
-    void send_requests_pipelined(std::vector<RequestCommand> commands, std::string host_name, int port_number);
+    void send_requests_pipelined(std::vector<std::string> request_messages, std::vector<RequestCommand> commands,
+                                 std::string host_name, int port_number);
 
     /**
      * Connects to a server on given host and port.
