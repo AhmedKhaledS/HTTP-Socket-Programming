@@ -9,16 +9,17 @@
 #include <vector>
 #include <sstream>
 
-std::vector<std::string> split_string(std::string s, char delimiter)
+std::vector<std::string> split_string(std::string s, std::string delimiter)
 {
-    std::stringstream iss(s);
     std::vector<std::string> splitted_strings;
-    while(iss.good())
-    {
-        std::string single_line;
-        getline(iss,single_line,delimiter);
-        splitted_strings.push_back(single_line);
+    size_t pos = 0;
+    std::string token;
+    while ((pos = s.find(delimiter)) != std::string::npos) {
+        token = s.substr(0, pos);
+        splitted_strings.push_back(token);
+        s.erase(0, pos + delimiter.length());
     }
+    splitted_strings.push_back(s);
     return splitted_strings;
 }
 

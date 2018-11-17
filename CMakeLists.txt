@@ -39,6 +39,6 @@ add_executable(runClient client/WebClient.cpp
         fileServices/FileReader.cpp
         fileServices/FileReader.h
         fileServices/FileWriter.cpp
-        fileServices/FileWriter.h client/main.cpp client/RequestBuilder.cpp client/RequestBuilder.h)
+        fileServices/FileWriter.h client/main.cpp client/RequestBuilder.cpp client/RequestBuilder.h client/response/ResponseHandler.cpp client/response/ResponseHandler.h client/response/Response.cpp client/response/Response.h)
 
 target_link_libraries(run ${Boost_LIBRARIES} -lrt)
