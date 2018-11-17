@@ -34,4 +34,11 @@ add_executable(run client/WebClient.cpp
                     server/ConnectionsTracker.cpp
                     server/ConnectionsTracker.h client/RequestCommand.cpp client/RequestCommand.h client/StringUtils.h)
 
+add_executable(runClient client/WebClient.cpp
+        client/RequestCommand.cpp client/RequestCommand.h client/StringUtils.h fileServices/FileHandler.h
+        fileServices/FileReader.cpp
+        fileServices/FileReader.h
+        fileServices/FileWriter.cpp
+        fileServices/FileWriter.h client/main.cpp)
+
 target_link_libraries(run ${Boost_LIBRARIES} -lrt)

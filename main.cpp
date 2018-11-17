@@ -49,8 +49,8 @@ int main(int argc, char **argv)
 //    cout << "content: " + post_test->get_content() << endl;
 //    cout << "file_name: " + post_test->get_file_name() << endl;
 
-//    WebServer server(8080);
-//    server.start();
+    WebServer server(8080);
+    server.start();
 
 
 /*
@@ -61,6 +61,4 @@ int main(int argc, char **argv)
     string content = file_reader->read_file("../resources/html_version.html");
     file_writer->write_file("../resources/html_version_test.html", content);
 */
-    WebClient client = WebClient();
-    client.send_requests("../requests.txt", "host", 80, CONNECTION_TYPE::NON_PERSISTENT);
 }
