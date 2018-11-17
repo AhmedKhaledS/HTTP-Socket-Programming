@@ -1,0 +1,3 @@
+GET file1.txt naggar 90
+POST file2.txt hisham 100
+POST file3.html khaled 200
