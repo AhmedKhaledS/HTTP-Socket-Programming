@@ -32,7 +32,9 @@ void WebClient::post_file(std::string file_path, int socket_fd) {
 
 std::string WebClient::receive_response(int socket) {
     char buffer[MAX_BUFF_SIZE] = {0};
+    cout << "WAITING FOR RESPONSE" << endl;
     recv(socket, buffer, strlen(buffer), 0);
+    cout << "GOT RESPONSE" << endl;
     return string(buffer);
 }
 
@@ -82,8 +84,8 @@ RequestCommand WebClient::parse_request_command_line(std::string request_line) {
     {
         request_command.setType(args[0] == "GET" ? REQ_TYPE::GET : REQ_TYPE::POST);
     }
-    request_command.setFile_name(args[1]);
     request_command.setHost_name(args[2]);
+    request_command.setFile_name(args[1]);
     if (args.size() == 4) {
         request_command.setPort_number(stoi(args[3]));
     }
