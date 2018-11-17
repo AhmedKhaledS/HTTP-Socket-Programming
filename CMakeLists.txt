@@ -8,14 +8,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread")
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
-add_executable(run client/WebClient.cpp
+add_executable(run  client/WebClient.cpp
                     client/WebClient.h
                     server/PostRequest.h
                     server/RequestParser.cpp
                     server/RequestParser.h
                     server/WebServer.cpp
                     server/WebServer.h
-                     fileServices/FileHandler.h
+                    fileServices/FileHandler.h
                     fileServices/FileReader.cpp
                     fileServices/FileReader.h
                     fileServices/FileWriter.cpp
@@ -24,7 +24,8 @@ add_executable(run client/WebClient.cpp
                     server/PostRequest.cpp
                     server/Request.h
                     server/Request.cpp
-                    main.cpp server/util/Constants.h
+                    main.cpp
+                    server/util/Constants.h
                     server/util/Constants.cpp
                     server/util/HttpHeader.cpp
                     server/GetRequest.cpp
