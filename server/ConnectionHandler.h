@@ -24,7 +24,7 @@ public:
     void handle(int socket_fd);
 
 private:
-    void handle_request(char buffer_copy[]);
+    void handle_request(char buffer_copy[], int socket_fd);
     int get_process_index(shared_vector *running_processes);
 };
 

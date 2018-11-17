@@ -92,8 +92,7 @@ RequestCommand WebClient::parse_request_command_line(std::string request_line) {
     return request_command;
 }
 
-void
-WebClient::send_requests_non_persistent(std::vector<std::string> request_messages, std::vector<RequestCommand> commands,
+void WebClient::send_requests_non_persistent(std::vector<std::string> request_messages, std::vector<RequestCommand> commands,
         std::string host_name, int port_number) {
     int commands_index = 0;
     for (string message : request_messages)
