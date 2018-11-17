@@ -11,6 +11,20 @@ FileReader::FileReader()
 {
 }
 
+bool FileReader::file_exist(std::string path)
+{
+    ifstream file(path);
+    if (file.is_open())
+    {
+        file.close();
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 std::string FileReader::read_file(std::string path)
 {
     ifstream file(path);

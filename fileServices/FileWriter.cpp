@@ -11,6 +11,10 @@ FileWriter::FileWriter()
 {
 }
 
+bool FileWriter::file_exist(std::string path)
+{
+}
+
 std::string FileWriter::read_file(std::string path)
 {
 }
