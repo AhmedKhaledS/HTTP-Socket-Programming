@@ -12,11 +12,8 @@
 #include <arpa/inet.h>
 
 #include "StringUtils.h"
-<<<<<<< HEAD
 #include <unistd.h>
-=======
 #include "RequestBuilder.h"
->>>>>>> 08ca01a0a9eb4b2885befded84dddf75ad65b14d
 
 #define MAX_BUFF_SIZE 1024
 

@@ -34,6 +34,8 @@ add_executable(run  client/WebClient.cpp
                     server/ConnectionHandler.cpp
                     client/RequestCommand.cpp
                     client/RequestCommand.h
+                    client/RequestBuilder.cpp
+                    client/RequestBuilder.h
                     client/StringUtils.h)
 
 add_executable(runClient client/WebClient.cpp
