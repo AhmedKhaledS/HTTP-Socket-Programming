@@ -29,6 +29,12 @@ public:
     void post_file(std::string file_path, int socket_fd);
 
     /**
+     * Receives response on socket and returns a string containing the response.
+     * @param socket socket to receive response from.
+     * @return response
+     */
+    std::string receive_response(int socket);
+    /**
      * Sends requests from a a given file containing list of requests.
      * @param requests_file_name name of the file containing requests
      * @param host_name name of server
@@ -54,12 +60,19 @@ private:
     RequestCommand parse_request_command_line(std::string request_line);
 
     /**
+     * Builds list of string messages from Request Command Objects.
+     * @param commands list of request commands
+     * @return vector of request messages
+     */
+    std::vector<std::string> build_request_messages(std::vector<RequestCommand> commands);
+
+    /**
      * Connects to a server on given host and port and sends requests using non-persistent connections.
      * @param commands vector of commands to be issued
      * @param host_name name of host
      * @param port_number port number
      */
-    void send_requests_non_persistent(std::vector<RequestCommand> commands, std::string host_name, int port_number);
+    void send_requests_non_persistent(std::vector<std::string> request_messages, std::string host_name, int port_number);
 
     /**
      * Connects to a server on given host and port and sends requests using non-persistent connections.

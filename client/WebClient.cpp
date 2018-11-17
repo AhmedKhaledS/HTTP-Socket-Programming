@@ -12,7 +12,11 @@
 #include <arpa/inet.h>
 
 #include "StringUtils.h"
+<<<<<<< HEAD
 #include <unistd.h>
+=======
+#include "RequestBuilder.h"
+>>>>>>> 08ca01a0a9eb4b2885befded84dddf75ad65b14d
 
 #define MAX_BUFF_SIZE 1024
 
@@ -28,10 +32,27 @@ void WebClient::post_file(std::string file_path, int socket_fd) {
 
 }
 
+std::string WebClient::receive_response(int socket) {
+    char buffer[MAX_BUFF_SIZE];
+    recv(socket, buffer, strlen(buffer), 0);
+    return string(buffer);
+}
+
 void WebClient::send_requests(std::string requests_file_name, std::string host_name, int port_number,
                               CONNECTION_TYPE connection_type) {
     vector<RequestCommand> requests = parse_request_commands_file(requests_file_name);
-    send_requests_non_persistent(requests, host_name, port_number);
+    vector<string> request_messages = build_request_messages(requests);
+    send_requests_non_persistent(request_messages, host_name, port_number);
+}
+
+std::vector<std::string> WebClient::build_request_messages(std::vector<RequestCommand> commands) {
+    vector<string> messages;
+    RequestBuilder request_builder = RequestBuilder();
+    for (RequestCommand command : commands)
+    {
+        messages.push_back(request_builder.build_request_message(command));
+    }
+    return messages;
 }
 
 std::vector<RequestCommand> WebClient::parse_request_commands_file(std::string file_name) {
@@ -72,11 +93,9 @@ RequestCommand WebClient::parse_request_command_line(std::string request_line) {
 }
 
 void
-WebClient::send_requests_non_persistent(std::vector<RequestCommand> commands, std::string host_name, int port_number) {
-    char buffer[MAX_BUFF_SIZE] = {0};
-//    for (auto command : commands)
+WebClient::send_requests_non_persistent(std::vector<std::string> request_messages, std::string host_name, int port_number) {
+    for (string message : request_messages)
     {
-        /// TODO use which hostname and port number !
         int socket = connect(host_name, port_number);
         /// TODO : Fill in buffer
         char* request = "GET /kurose_ross/interactive/quotation1.htm HTTP/1.0\r\n"
@@ -90,6 +109,9 @@ WebClient::send_requests_non_persistent(std::vector<RequestCommand> commands, st
         send(socket, request2, strlen(request), 0);
         /// TODO : close Socket
         sleep(10);
+//        send(socket, message.c_str(), strlen(message.c_str()), 0);
+//        string response = receive_response(socket);
+//        cout << "RESPONSE FOR " << message << "\n====\n" << response << endl;
     }
 }
 
