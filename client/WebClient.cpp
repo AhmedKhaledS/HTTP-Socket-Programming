@@ -95,7 +95,7 @@ WebClient::send_requests_non_persistent(std::vector<std::string> request_message
 //    {
         int socket = connect(host_name, port_number);
         /// TODO : Fill in buffer
-        char* request = "GET /kurose_ross/interactive/quotation1.html HTTP/1.0\r\n"
+        char* request = "GET /html_version.html HTTP/1.0\r\n"
                         "Host: gaia.cs.umass.edu\r\n"
                         "\r\n";
     

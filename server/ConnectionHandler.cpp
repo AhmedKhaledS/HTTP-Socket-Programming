@@ -13,6 +13,8 @@
 #include <time.h>
 #include <thread>
 #include "RequestParser.h"
+#include "../fileServices/FileReader.h"
+#include "../fileServices/FileWriter.h"
 
 
 
@@ -41,7 +43,7 @@ void ConnectionHandler::handle(int socket_fd)
         (*running_processes)[process_index].second = static_cast<long long>(time(NULL));
 
         // Here we create the handler threads.
-         handle_request(buffer_copy);
+         handle_request(buffer_copy, socket_fd);
         //        std::thread first (handle_request, buffer_copy);
     }
     return;
@@ -57,7 +59,7 @@ int ConnectionHandler::get_process_index(shared_vector *running_processes)
 
 }
 
-void ConnectionHandler::handle_request(char buffer_copy[])
+void ConnectionHandler::handle_request(char buffer_copy[], int socket_fd)
 {
     cout << "--Reached Handler" << endl;
 
@@ -81,9 +83,40 @@ void ConnectionHandler::handle_request(char buffer_copy[])
     string file_path = resources_path + request->get_file_name();
     cout << file_path << endl;
 
+    string found_response = "HTTP/1.1 200 OK\r\n";
+    string not_found_response = "HTTP/1.1 404 NOT_FOUND\r\n";
+
+    FileReader* file_reader = new FileReader();
+    FileWriter* file_writer = new FileWriter();
+
     // Check GET or POST ...
+    if(request->get_request_type() == "GET")
+    {
+        if(file_reader->file_exist(file_path))
+        {
+            string content = file_reader->read_file(file_path);
+            found_response += content;
+            // return found_response
+            cout << found_response << endl;
+            send(socket_fd, found_response.c_str(), strlen(found_response.c_str()), 0);
+        }
+        else
+        {
+            // return not_found_response
+            cout << not_found_response << endl;
+            send(socket_fd, not_found_response.c_str(),
+                 strlen(not_found_response.c_str()), 0);
+
+        }
+    }
+    else if (request->get_request_type() == "POST")
+    {
+        file_writer->write_file(file_path, request->get_content());
+        // return found_response
+        cout << found_response << endl;
+        send(socket_fd, found_response.c_str(), strlen(found_response.c_str()), 0);
+    }
 
     // handler thread goes here
     cout << "Ended Handler" << endl;
 }
-
