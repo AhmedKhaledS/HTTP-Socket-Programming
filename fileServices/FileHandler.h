@@ -10,6 +10,7 @@
 class FileHandler
 {
     public:
+        virtual bool file_exist(std::string path) = 0;
         virtual std::string read_file(std::string path) = 0;
         virtual void write_file(std::string path, std::string content) = 0;
 };

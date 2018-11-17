@@ -12,6 +12,7 @@
 #include <arpa/inet.h>
 
 #include "StringUtils.h"
+#include <unistd.h>
 #include "RequestBuilder.h"
 #include "response/ResponseHandler.h"
 

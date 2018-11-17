@@ -16,8 +16,6 @@ public:
     ResponseHandler();
     void handle_response(std::string message, REQ_TYPE request_type, std::string file_name);
 
-protected:
-    Response response;
 };
 
 
