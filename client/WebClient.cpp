@@ -91,25 +91,26 @@ RequestCommand WebClient::parse_request_command_line(std::string request_line) {
 
 void
 WebClient::send_requests_non_persistent(std::vector<std::string> request_messages, std::string host_name, int port_number) {
-    for (string message : request_messages)
-    {
+//    for (string message : request_messages)
+//    {
         int socket = connect(host_name, port_number);
         /// TODO : Fill in buffer
-        char* request = "GET /kurose_ross/interactive/quotation1.htm HTTP/1.0\r\n"
+        char* request = "GET /kurose_ross/interactive/quotation1.html HTTP/1.0\r\n"
                         "Host: gaia.cs.umass.edu\r\n"
                         "\r\n";
+    
         send(socket, request, strlen(request), 0);
-        sleep(2);
-        char* request2 = "GET /kurose_ross/interactive/quotation1.htm HTTP/1.0\r\n"
-                        "Host: gaia.cs.umass.edu\r\n"
-                        "\r\n";
-        send(socket, request2, strlen(request), 0);
+//        sleep(2);
+//        char* request2 = "GET /kurose_ross/interactive/quotation2.htm HTTP/1.0\r\n"
+//                        "Host: gaia.cs.umass.edu\r\n"
+//                        "\r\n";
+//        send(socket, request2, strlen(request), 0);
         /// TODO : close Socket
         sleep(10);
 //        send(socket, message.c_str(), strlen(message.c_str()), 0);
 //        string response = receive_response(socket);
 //        cout << "RESPONSE FOR " << message << "\n====\n" << response << endl;
-    }
+//    }
 }
 
 void WebClient::send_requests_persistent(std::vector<RequestCommand> commands, std::string host_name, int port_number) {
