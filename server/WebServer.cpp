@@ -80,6 +80,7 @@ void WebServer::start()
             perror("accept");
             exit(EXIT_FAILURE);
         }
+        std::cout << "Accepted new Connection." << std::endl;
         ConnectionHandler connection_handler = ConnectionHandler();
         int pid = fork();
         if (pid == 0)

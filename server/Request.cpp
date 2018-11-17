@@ -36,6 +36,16 @@ void Request::set_content(string content)
     this->content = "";
 }
 
+void Request::set_request_type(string request_type)
+{
+    this->request_type = request_type;
+}
+
+string Request::get_request_type()
+{
+    return this->request_type;
+}
+
 string Request::get_content()
 {
     return "";
