@@ -30,7 +30,7 @@ Request* RequestParser::parse()
         }
         else if (splited_line.size() == 2)
         {
-            header_attributes[splited_line[0].substr(0, splited_line[0].length()-1)] = splited_line.back();
+            header_attributes[splited_line[0].substr(0, splited_line[0].length()-1)] = splited_line[1];
         }
     }
     return get_specified_request();
@@ -42,10 +42,12 @@ Request* RequestParser::get_specified_request()
     if (request_type == "GET")
     {
         request = new GetRequest(this->header_attributes, this->requested_file_name);
+        request->set_request_type("GET");
     }
     else if (request_type == "POST")
     {
         request = new PostRequest(this->header_attributes, this->requested_file_name);
+        request->set_request_type("POST");
         // TODO: Set the content here.
     }
     else

@@ -11,6 +11,7 @@
 #include "fileServices/FileWriter.h"
 #include "client/WebClient.h"
 #include <time.h>
+#include <vector>
 
 
 using namespace std;
@@ -35,19 +36,15 @@ int main(int argc, char **argv)
 //    post.set_content("This is a testing content.");
 //    cout << post.get_file_name() << "   " << post.get_http_header().accept << "  " << post.get_content() << endl;
 
-//    RequestParser requestParser(vector<string>({"PUT /index.html HTTP/1.1", "Host: www-net.cs.umass.edu",
-//                                "User-Agent: Firefox/3.6.10",
-//                                "Accept: text/html,application/xhtml+xml",
-//                                "Accept-Language: en-us,en;q=0.5",
-//                                "Accept-Encoding: gzip,deflate",
-//                                "Accept-Charset: ISO-8859-1,utf-8;q=0.7",
-//                                "Keep-Alive: 115",
-//                                "Connection: keep-alive"}));
+//    RequestParser requestParser(std::vector<string>({"GET /kurose_ross/interactive/quotation1.html HTTP/1.0\r\n",
+//                                                     "Host: gaia.cs.umass.edu\r\n",
+//                                                     "\r\n"}));
 //    Request *post_test = requestParser.parse();
-////    post_test.set_file_name("Changed_file_name");
-////    cout << post_test.get_file_name() << endl;
+//////    post_test.set_file_name("Changed_file_name");
+//////    cout << post_test.get_file_name() << endl;
 //    cout << "content: " + post_test->get_content() << endl;
 //    cout << "file_name: " + post_test->get_file_name() << endl;
+//    cout << post_test->get_http_header().host << endl;
 
     WebServer server(8080);
     server.start();
