@@ -15,13 +15,15 @@ class Request
     private:
         HttpHeader request_header;
         std::string file_name;
-
+        std::string request_type;
     public:
         Request(HttpHeader header, std::string file_name);
         void set_request_header(HttpHeader header);
         HttpHeader get_http_header();
         void set_file_name(std::string file_name);
         std::string get_file_name();
+        void set_request_type(std::string request_type);
+        std::string get_request_type();
         virtual std::string get_content();
         virtual void set_content(std::string content);
 };
