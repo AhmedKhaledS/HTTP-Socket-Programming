@@ -24,7 +24,7 @@ ConnectionHandler::ConnectionHandler() {}
 
 void ConnectionHandler::handle(int socket_fd)
 {
-    boost::interprocess::managed_shared_memory segment(boost::interprocess::open_only, "MySharedMemory");
+    boost::interprocess::managed_shared_memory segment(boost::interprocess::open_only, "SharedMemory");
     shared_vector *running_processes = segment.find<shared_vector>("shared_vector").first;
     int process_index = get_process_index(running_processes);
 
@@ -44,7 +44,7 @@ void ConnectionHandler::handle(int socket_fd)
 
 
         printf("\n Message : %s\n", buffer);
-        return; // TODO : Need to finish parsing and handling requests.
+        return;
         // check
 //        if (!ConnectionsTracker::check_connections()) {
 //            return;

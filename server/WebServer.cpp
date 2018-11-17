@@ -3,7 +3,6 @@
 //
 
 #include "WebServer.h"
-#include "ConnectionHandler.h"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -11,7 +10,6 @@
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <vector>
-
 #include <string.h>
 #include <sys/ipc.h>
 #include <sys/types.h>
@@ -30,7 +28,7 @@ WebServer::WebServer(int port_number) : port_number(port_number)
 
 void WebServer::start()
 {
-    initialize_shared_memory();
+    shared_vector *running_processes = initialize_shared_memory();
 
     int server_fd, new_socket;
     struct sockaddr_in address;
@@ -84,8 +82,12 @@ void WebServer::start()
         } else {
             // Parent
 //            this->child_pids.push_back(pid);
+            sleep(5);
             std::cout << "Reached Parent" << std::endl;
-
+            for (auto process : *running_processes)
+            {
+                std::cout << "--Parent-- PID: " << process.first << " | Last Request Time: " << process.second << std::endl;
+            }
         }
         // Destroy the created segment.
         segment->destroy<shared_vector>("shared_vector");
@@ -94,23 +96,23 @@ void WebServer::start()
     }
 }
 
-void WebServer::initialize_shared_memory()
+shared_vector* WebServer::initialize_shared_memory()
 {
     //Remove shared memory on construction and destruction
     struct shm_remove
     {
-        shm_remove() { shared_memory_object::remove("MySharedMemory"); }
-        ~shm_remove(){ shared_memory_object::remove("MySharedMemory"); }
+        shm_remove() { shared_memory_object::remove("SharedMemory"); }
+        ~shm_remove(){ shared_memory_object::remove("SharedMemory"); }
     } remover;
 
     //Create a new segment with given name and size
-    segment = new managed_shared_memory(create_only, "MySharedMemory", 65536);
+    segment = new managed_shared_memory(create_only, "SharedMemory", 65536);
 
     //Initialize shared memory STL-compatible allocator
     const ShmemAllocator alloc_inst (segment->get_segment_manager());
 
     //Construct a vector named "shared_vector" in shared memory with argument alloc_inst
-    shared_vector *myvector = segment->construct<shared_vector>("shared_vector")(alloc_inst);
-
+    shared_vector *running_processes = segment->construct<shared_vector>("shared_vector")(alloc_inst);
+    return running_processes;
     // If we want to deal with this vector, code goes here.
 }

@@ -31,7 +31,6 @@ add_executable(run client/WebClient.cpp
                     server/GetRequest.h
                     server/ConnectionHandler.h
                     server/ConnectionHandler.cpp
-                    server/ConnectionsTracker.cpp
-                    server/ConnectionsTracker.h)
+        )
 
 target_link_libraries(run ${Boost_LIBRARIES} -lrt)

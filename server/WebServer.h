@@ -5,6 +5,8 @@
 #ifndef HTTP_SOCKET_PROGRAMMING_WEBSERVER_H
 #define HTTP_SOCKET_PROGRAMMING_WEBSERVER_H
 
+#include "ConnectionHandler.h"
+
 #include <vector>
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/containers/vector.hpp>
@@ -25,7 +27,7 @@ class WebServer
         int connections_count = 0;
         boost::interprocess::managed_shared_memory *segment;
 
-        void initialize_shared_memory();
+        shared_vector * initialize_shared_memory();
 };
 
 #endif //HTTP_SOCKET_PROGRAMMING_WEBSERVER_H
