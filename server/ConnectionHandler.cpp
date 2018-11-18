@@ -59,7 +59,7 @@ int ConnectionHandler::get_process_index(shared_vector *running_processes)
 
 }
 
-void ConnectionHandler::handle_request(char buffer_copy[], int socket_fd)
+    void ConnectionHandler::handle_request(char buffer_copy[], int socket_fd)
 {
     cout << "--Reached Handler" << endl;
 
