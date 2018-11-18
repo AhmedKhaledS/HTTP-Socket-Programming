@@ -12,10 +12,10 @@
 using namespace std;
 
 const string HEADERS = "Host: www.tutorialspoint.com\r\n"
-                       "User-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\r\n"
+                       "User-Agent: Mozilla/4.0(compatible;MSIE5.01;WindowsNT)\r\n"
                        "Accept: text/html,application/xhtml+xml\r\n"
                        "Accept-Language: en-us\r\n"
-                       "Accept-Encoding: gzip, deflate\r\n"
+                       "Accept-Encoding: gzip,deflate\r\n"
                        "Accept-Charset: ISO-8859-1,utf-8;q=0.7\r\n"
                        "Connection: Keep-Alive\r\n"
                        "\r\n";
@@ -34,7 +34,13 @@ std::string RequestBuilder::build_request_message(RequestCommand command) {
     request += HEADERS;
     if (command.getType() == REQ_TYPE::POST) {
         FileReader* reader = new FileReader();
-        request += reader->read_file(command.getFile_name());
+//        if (reader->file_exist(command.getFile_name()))
+            request += reader->read_file(command.getFile_name());
+//        else
+//        {
+//            perror("CANNOT ISSUE POST REQUEST : FILE NOT FOUND");
+//            exit(-1);
+//        }
     }
     return request;
 }

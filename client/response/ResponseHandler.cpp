@@ -2,6 +2,7 @@
 // Created by ahmednagga19 on 17/11/18.
 //
 
+#include <iostream>
 #include "ResponseHandler.h"
 #include "../../fileServices/FileWriter.h"
 
@@ -19,6 +20,7 @@ void ResponseHandler::handle_response(std::string message, REQ_TYPE request_type
     if (request_type == REQ_TYPE::GET && response.getResponse_type() == RES_TYPE::OKAY) {
         FileWriter* writer = new FileWriter();
         writer->write_file(FOLDER + file_name, response.getData());
+        cout << "=========== "  << file_name << endl;
     }
 }
 

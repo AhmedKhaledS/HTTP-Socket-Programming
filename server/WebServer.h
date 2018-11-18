@@ -28,6 +28,7 @@ class WebServer
         boost::interprocess::managed_shared_memory *segment;
 
         shared_vector * initialize_shared_memory();
+        void kill_connection_process(shared_vector* running_process);
 };
 
 #endif //HTTP_SOCKET_PROGRAMMING_WEBSERVER_H

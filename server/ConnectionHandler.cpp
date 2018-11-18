@@ -12,6 +12,7 @@
 #include <netinet/in.h>
 #include <time.h>
 #include <thread>
+#include <mutex>
 #include "RequestParser.h"
 #include "../fileServices/FileReader.h"
 #include "../fileServices/FileWriter.h"
@@ -21,6 +22,8 @@
 using namespace std;
 
 const int BUFFER_SIZE = 1024;
+
+mutex ConnectionHandler::lock;
 
 ConnectionHandler::ConnectionHandler() {}
 
@@ -43,8 +46,9 @@ void ConnectionHandler::handle(int socket_fd)
         (*running_processes)[process_index].second = static_cast<long long>(time(NULL));
 
         // Here we create the handler threads.
-         handle_request(buffer_copy, socket_fd);
-        //        std::thread first (handle_request, buffer_copy);
+//         handle_request(buffer_copy, socket_fd);
+        std::thread first (&ConnectionHandler::handle_request, this, buffer_copy, socket_fd);
+        first.detach();
     }
     return;
 }
@@ -61,6 +65,7 @@ int ConnectionHandler::get_process_index(shared_vector *running_processes)
 
 void ConnectionHandler::handle_request(char buffer_copy[], int socket_fd)
 {
+    lock.lock();
     cout << "--Reached Handler" << endl;
 
     // Convert the buffer to vector of strings
@@ -72,9 +77,9 @@ void ConnectionHandler::handle_request(char buffer_copy[], int socket_fd)
         while(std::getline(ss,to,'\n')){
            message_lines.push_back(to);
         }
+        message_lines.pop_back();
     }
-
-
+    printf("Biuffer : %s\n", buffer_copy);
     // Get the file path
     RequestParser request_parser = RequestParser(message_lines);
     Request* request = request_parser.parse();
@@ -89,6 +94,8 @@ void ConnectionHandler::handle_request(char buffer_copy[], int socket_fd)
     FileReader* file_reader = new FileReader();
     FileWriter* file_writer = new FileWriter();
 
+    printf("File Name %s \n", request->get_file_name().c_str());
+
     // Check GET or POST ...
     if(request->get_request_type() == "GET")
     {
@@ -97,13 +104,14 @@ void ConnectionHandler::handle_request(char buffer_copy[], int socket_fd)
             string content = file_reader->read_file(file_path);
             found_response += content;
             // return found_response
-            cout << found_response << endl;
-            send(socket_fd, found_response.c_str(), strlen(found_response.c_str()), 0);
+            cout << "===SIZE=====" << found_response.length() << endl;
+            send(socket_fd, found_response.c_str(), (30000), 0);
         }
         else
         {
             // return not_found_response
             cout << not_found_response << endl;
+            printf("Again : %s\n", not_found_response.c_str());
             send(socket_fd, not_found_response.c_str(),
                  strlen(not_found_response.c_str()), 0);
 
@@ -119,4 +127,5 @@ void ConnectionHandler::handle_request(char buffer_copy[], int socket_fd)
 
     // handler thread goes here
     cout << "Ended Handler" << endl;
+    lock.unlock();
 }
