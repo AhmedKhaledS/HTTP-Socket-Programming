@@ -23,4 +23,3 @@ void ResponseHandler::handle_response(std::string message, REQ_TYPE request_type
         cout << "=========== "  << file_name << endl;
     }
 }
-
