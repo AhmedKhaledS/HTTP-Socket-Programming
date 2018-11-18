@@ -16,7 +16,7 @@
 #include "RequestParser.h"
 #include "../fileServices/FileReader.h"
 #include "../fileServices/FileWriter.h"
-
+#include "../SocketServices/SocketHandler.h"
 
 
 using namespace std;
@@ -106,8 +106,8 @@ void ConnectionHandler::handle_request(char buffer_copy[], int socket_fd)
     string file_path = resources_path + request->get_file_name();
     cout << file_path << endl;
 
-    string found_response = "HTTP/1.1 200 OK\r\n";
-    string not_found_response = "HTTP/1.1 404 NOT_FOUND\r\n";
+    char* found_response = "HTTP/1.1 200 OK\r\n";
+    char* not_found_response = "HTTP/1.1 404 NOT_FOUND\r\n";
 
     FileReader* file_reader = new FileReader();
     FileWriter* file_writer = new FileWriter();
@@ -120,22 +120,26 @@ void ConnectionHandler::handle_request(char buffer_copy[], int socket_fd)
         if(file_reader->file_exist(file_path))
         {
             string content = file_reader->read_file(file_path);
-            found_response += content;
+            char *mod_content = &content[0u];
+//            found_response += content;
             // return found_response
 //            cout << "===SIZE=====" << found_response.length() << endl;
-            char *cstr = new char[found_response.length() + 1];
-            strcpy(cstr, found_response.c_str());
-            int length = found_response.length();
-            sendall(cstr, &length, socket_fd);
+//            char *cstr = new char[found_response.length() + 1];
+//            strcpy(cstr, found_response.c_str());
+//            int length = found_response.length();
+//            sendall(cstr, &length, socket_fd);
 //            send(socket_fd, cstr, (30000), 0);
+            cout << "---Found Response: " << found_response << endl;
+            cout << "---Content: " << mod_content << endl;
+            SocketHandler::send(socket_fd, found_response, mod_content);
         }
         else
         {
             // return not_found_response
             cout << not_found_response << endl;
-            printf("Again : %s\n", not_found_response.c_str());
-            send(socket_fd, not_found_response.c_str(),
-                 strlen(not_found_response.c_str()), 0);
+//            printf("Again : %s\n", not_found_response.c_str());
+//            send(socket_fd, not_found_response.c_str(),
+//                 strlen(not_found_response.c_str()), 0);
 
         }
     }
@@ -144,7 +148,7 @@ void ConnectionHandler::handle_request(char buffer_copy[], int socket_fd)
         file_writer->write_file(file_path, request->get_content());
         // return found_response
         cout << found_response << endl;
-        send(socket_fd, found_response.c_str(), strlen(found_response.c_str()), 0);
+//        send(socket_fd, found_response.c_str(), strlen(found_response.c_str()), 0);
     }
 
     // handler thread goes here
