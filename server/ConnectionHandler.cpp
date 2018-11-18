@@ -63,7 +63,26 @@ int ConnectionHandler::get_process_index(shared_vector *running_processes)
 
 }
 
-    void ConnectionHandler::handle_request(char buffer_copy[], int socket_fd)
+
+int sendall(char *buf, int *len, int s)
+{
+    size_t total = 0;        // how many bytes we've sent
+    int  bytes_left = *len; // how many we have left to send
+    size_t  n;
+
+    while(total < *len) {
+        n = send(s, buf+total, bytes_left, 0);
+        if (n == -1) { break; }
+        total += n;
+        bytes_left -= n;
+    }
+
+    *len = total; // return number actually sent here
+
+    return n==-1?-1:0; // return -1 onm failure, 0 on success
+}
+
+void ConnectionHandler::handle_request(char buffer_copy[], int socket_fd)
 {
     lock.lock();
     cout << "--Reached Handler" << endl;
@@ -104,8 +123,12 @@ int ConnectionHandler::get_process_index(shared_vector *running_processes)
             string content = file_reader->read_file(file_path);
             found_response += content;
             // return found_response
-            cout << "===SIZE=====" << found_response.length() << endl;
-            send(socket_fd, found_response.c_str(), (30000), 0);
+//            cout << "===SIZE=====" << found_response.length() << endl;
+            char *cstr = new char[found_response.length() + 1];
+            strcpy(cstr, found_response.c_str());
+            int length = found_response.length();
+            sendall(cstr, &length, socket_fd);
+//            send(socket_fd, cstr, (30000), 0);
         }
         else
         {

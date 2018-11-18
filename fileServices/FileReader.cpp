@@ -27,7 +27,7 @@ bool FileReader::file_exist(std::string path)
 
 std::string FileReader::read_file(std::string path)
 {
-    ifstream file(path);
+    ifstream file(path, std::ios::in | std::ios::binary);
     if (file.is_open())
     {
         std::string line((std::istreambuf_iterator<char>(file)),

@@ -131,7 +131,7 @@ void WebClient::send_requests_persistent(std::vector<std::string> request_messag
 
 void WebClient::issue_request(string message, RequestCommand command, int socket)
 {
-    cout << "Sending " << endl;
+    cout << "Sending Request " << endl;
     send(socket, message.c_str(), strlen(message.c_str()), 0);
     string response = receive_response(socket);
     cout << " Length : ===== " << response.length() << endl;
