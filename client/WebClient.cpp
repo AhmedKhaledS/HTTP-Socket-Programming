@@ -13,10 +13,11 @@
 
 #include "StringUtils.h"
 #include <unistd.h>
+#include <thread>
 #include "RequestBuilder.h"
 #include "response/ResponseHandler.h"
 
-#define MAX_BUFF_SIZE 1024
+const int MAX_BUFF_SIZE = 50000;
 
 using namespace std;
 
@@ -32,7 +33,9 @@ void WebClient::post_file(std::string file_path, int socket_fd) {
 
 std::string WebClient::receive_response(int socket) {
     char buffer[MAX_BUFF_SIZE] = {0};
-    recv(socket, buffer, strlen(buffer), 0);
+    cout << "WAITING FOR RESPONSE" << endl;
+    read(socket, buffer, MAX_BUFF_SIZE);
+    cout << "GOT RESPONSE : " << string(buffer) << endl;
     return string(buffer);
 }
 
@@ -40,7 +43,12 @@ void WebClient::send_requests(std::string requests_file_name, std::string host_n
                               CONNECTION_TYPE connection_type) {
     vector<RequestCommand> requests = parse_request_commands_file(requests_file_name);
     vector<string> request_messages = build_request_messages(requests);
-    send_requests_non_persistent(request_messages, requests, host_name, port_number);
+    if (connection_type == CONNECTION_TYPE::NON_PERSISTENT)
+        send_requests_non_persistent(request_messages, requests, host_name, port_number);
+    else if (connection_type == CONNECTION_TYPE::PERSISTENT)
+        send_requests_persistent(request_messages, requests, host_name, port_number);
+    else
+        send_requests_pipelined(request_messages, requests, host_name, port_number);
 }
 
 std::vector<std::string> WebClient::build_request_messages(std::vector<RequestCommand> commands) {
@@ -82,8 +90,8 @@ RequestCommand WebClient::parse_request_command_line(std::string request_line) {
     {
         request_command.setType(args[0] == "GET" ? REQ_TYPE::GET : REQ_TYPE::POST);
     }
-    request_command.setFile_name(args[1]);
     request_command.setHost_name(args[2]);
+    request_command.setFile_name(args[1]);
     if (args.size() == 4) {
         request_command.setPort_number(stoi(args[3]));
     }
@@ -101,18 +109,57 @@ void WebClient::send_requests_non_persistent(std::vector<std::string> request_me
         ResponseHandler response_handler = ResponseHandler();
         response_handler.handle_response(response, commands[commands_index].getType(), commands[commands_index].getFile_name());
         cout << "RESPONSE FOR " << message << "\n====\n" << response << endl;
+        commands_index++;
     }
 }
 
 void WebClient::send_requests_persistent(std::vector<std::string> request_messages, std::vector<RequestCommand> commands,
-                                         std::string host_name, int port_number) {
+                                         std::string host_name, int port_number)
+{
+    int socket = connect(host_name, port_number);
+    int commands_index = 0;
+    for (string message : request_messages)
+    {
+        send(socket, message.c_str(), strlen(message.c_str()), 0);
+        string response = receive_response(socket);
+        ResponseHandler response_handler = ResponseHandler();
+        response_handler.handle_response(response, commands[commands_index].getType(), commands[commands_index].getFile_name());
+        cout << "RESPONSE FOR " << message << "\n====\n" << response << endl;
+        commands_index++;
+    }
+}
 
+void WebClient::issue_request(string message, RequestCommand command, int socket)
+{
+    cout << "Sending " << endl;
+    send(socket, message.c_str(), strlen(message.c_str()), 0);
+    string response = receive_response(socket);
+    cout << " Length : ===== " << response.length() << endl;
+    ResponseHandler response_handler = ResponseHandler();
+    response_handler.handle_response(response, command.getType(), command.getFile_name());
+    cout << "RESPONSE FOR " << message << "\n====\n" << response << endl;
 }
 
 void WebClient::send_requests_pipelined(std::vector<std::string> request_messages, std::vector<RequestCommand> commands,
-                                        std::string host_name, int port_number) {
+                                        std::string host_name, int port_number)
+{
+    int socket = connect(host_name, port_number);
+    int commands_index = 0;
+    vector<thread*> request_threads;
+    for (string message : request_messages)
+    {
+        std::thread* request_thread = new thread(&WebClient::issue_request, this, message, commands[commands_index], socket);
+        request_threads.push_back(request_thread);
+        commands_index++;
+    }
+    for (thread* request_thread : request_threads)
+    {
+        request_thread->join();
+        delete request_thread;
+    }
 
 }
+
 
 int WebClient::connect(std::string hostname, int port_number) {
     struct sockaddr_in address;

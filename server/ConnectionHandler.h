@@ -7,6 +7,7 @@
 #include <vector>
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/containers/vector.hpp>
+#include <mutex>
 
 using namespace boost::interprocess;
 
@@ -26,6 +27,7 @@ public:
 private:
     void handle_request(char buffer_copy[], int socket_fd);
     int get_process_index(shared_vector *running_processes);
+    static std::mutex lock;
 };
 
 #endif //HTTP_CLIENT_SERVER_CONNECTIONHANDLER_H

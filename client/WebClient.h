@@ -94,6 +94,14 @@ private:
                                  std::string host_name, int port_number);
 
     /**
+     *
+     * @param message
+     * @param command
+     * @param socket
+     */
+    void issue_request(std::string message, RequestCommand command, int socket);
+
+    /**
      * Connects to a server on given host and port.
      * @param host_name name of host
      * @param port_number port number

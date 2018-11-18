@@ -13,14 +13,15 @@
 #include <string.h>
 #include <sys/ipc.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <iostream>
+#include <sys/types.h>
+#include <signal.h>
 
 
 using namespace boost::interprocess;
 
 const int MAX_QUEUE_SIZE = 10;
-
+const int MAX_CONNECTIONS = 20;
 
 
 WebServer::WebServer(int port_number) : port_number(port_number)
@@ -91,18 +92,44 @@ void WebServer::start()
         } else {
             // Parent
             running_processes->push_back({pid, static_cast<long long>(time(NULL))});
-            sleep(5);
+//            sleep(5);
             std::cout << "Reached Parent" << std::endl;
-//            for (auto process : *running_processes)
-//            {
-//                std::cout << "--Parent-- PID: " << process.first << " | Last Request Time: " << process.second << std::endl;
-//            }
+            for (auto process : *running_processes)
+            {
+                std::cout << "--Parent-- PID: " << process.first << " | Last Request Time: " << process.second << std::endl;
+            }
         }
-        // Destroy the created segment.
-        // TODO : Should add Heuristic to close connections.
+        if ((*running_processes).size() > MAX_CONNECTIONS)
+        {
+            kill_connection_process(running_processes);
+        }
+
     }
 //    segment->destroy<shared_vector>("shared_vector");
 //    delete segment;
+}
+
+void WebServer::kill_connection_process(shared_vector* runnning_processes) {
+    int min_pid = 0;
+    int min_index = 0;
+    int index = 0;
+    long long least_recently_used = 1e15;
+    for (auto process : *runnning_processes)
+    {
+        if (process.second < least_recently_used)
+        {
+            min_pid = process.first;
+            least_recently_used = process.second;
+            min_index = index;
+        }
+        index++;
+    }
+    if (least_recently_used != 1e15)
+    {
+        kill(min_pid, SIGKILL);
+        (*runnning_processes).erase(runnning_processes->begin() + min_index);
+    }
+    
 }
 
 shared_vector* WebServer::initialize_shared_memory()
