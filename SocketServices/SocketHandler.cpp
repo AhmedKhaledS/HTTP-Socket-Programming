@@ -13,31 +13,36 @@ using namespace std;
 
 const int MESSAGE_SIZE = 1024;
 
-int SocketHandler::send(int socket, char *header, char *data) {
+int SocketHandler::send(int socket, char *header, string data) {
 
     string termination_string = "\r\n\r\n";
     int offset = strlen(header);
-    int length = strlen(data) + strlen(header) + termination_string.length();
+    int length = data.size() + strlen(header) + termination_string.length();
     int bytes_left = length;
 
-    char* global_buffer = (char*) malloc(sizeof(char) * 2048);
+    string global_buffer = "";
+    global_buffer += header;
+    global_buffer += data;
+    global_buffer += termination_string;
 
-    // Header
-    strcpy(global_buffer, header);
-    strcat(global_buffer, data);
-//    cout << "test:buffer: " << global_buffer << endl;
-    strcat(global_buffer, termination_string.c_str());
-//    cout << "test:buffer222: " << global_buffer << endl;
+//    char* global_buffer = (char*) malloc(sizeof(char) * 2048);
+//
+//    // Header
+//    strcpy(global_buffer, header);
+//    strcat(global_buffer, data);
+////    cout << "test:buffer: " << global_buffer << endl;
+//    strcat(global_buffer, termination_string.c_str());
+////    cout << "test:buffer222: " << global_buffer << endl;
+//
+////    printf("header + data + termination: %s -> %d\n", global_buffer, strlen(global_buffer));
 
-//    printf("header + data + termination: %s -> %d\n", global_buffer, strlen(global_buffer));
-
-    int sent_bytes = ::send(socket, global_buffer, strlen(header), 0);
+    int sent_bytes = ::send(socket, global_buffer.c_str(), strlen(header), 0);
     bytes_left -= sent_bytes;
 
     while (bytes_left > 0)
     {
         cout << "Index: " << offset << " bytes left: " << bytes_left << endl;
-        int data_sent = ::send(socket, global_buffer + offset, bytes_left, 0);
+        int data_sent = ::send(socket, global_buffer.c_str() + offset, bytes_left, 0);
         offset += data_sent;
         bytes_left -= data_sent;
 
@@ -45,7 +50,6 @@ int SocketHandler::send(int socket, char *header, char *data) {
             return 0; // Failure
     }
 
-    free(global_buffer);
     return 1; // success
 }
 

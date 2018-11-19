@@ -10,7 +10,7 @@
 class SocketHandler {
 
     public:
-        static int send (int socket, char* header, char* data);
+        static int send (int socket, char* header, std::string data);
         static int send (int socket, char* header);
         static void recieve (int socket, std::string &buffer);
 
