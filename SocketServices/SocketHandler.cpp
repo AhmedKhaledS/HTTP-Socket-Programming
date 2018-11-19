@@ -15,43 +15,38 @@ const int MESSAGE_SIZE = 1024;
 
 int SocketHandler::send(int socket, char *header, char *data) {
 
+    string termination_string = "\r\n\r\n";
+    int offset = strlen(header);
+    int length = strlen(data) + strlen(header) + termination_string.length();
+    int bytes_left = length;
 
-   ::send(socket, header, strlen(header), 0);
-
-
-    int index = 0;
-    int length = strlen(data);
-
-    char* global_buffer = "";
+    char* global_buffer = (char*) malloc(sizeof(char) * 2048);
 
     // Header
     strcpy(global_buffer, header);
-    cout << "GLOBAL BUFFER1: " << global_buffer << endl;
-    ::send(socket, global_buffer, strlen(global_buffer), 0);
+    strcat(global_buffer, data);
+//    cout << "test:buffer: " << global_buffer << endl;
+    strcat(global_buffer, termination_string.c_str());
+//    cout << "test:buffer222: " << global_buffer << endl;
 
-    // Data
-    strcpy(global_buffer, data);
-    cout << "GLOBAL BUFFER2: " << global_buffer << endl;
-//    ::send(socket, global_buffer, strlen(global_buffer), 0);
+//    printf("header + data + termination: %s -> %d\n", global_buffer, strlen(global_buffer));
 
+    int sent_bytes = ::send(socket, global_buffer, strlen(header), 0);
+    bytes_left -= sent_bytes;
 
-//    ::send(socket, header, strlen(header), 0);
-
-    while (index < length)
+    while (bytes_left > 0)
     {
-        int data_size = min(MESSAGE_SIZE, length - index);
-        int data_sent = ::send(socket, global_buffer + index, strlen(global_buffer), 0);
-//        int data_sent = ::send(socket, data+index, data_size, 0);
-        index += MESSAGE_SIZE;
+        cout << "Index: " << offset << " bytes left: " << bytes_left << endl;
+        int data_sent = ::send(socket, global_buffer + offset, bytes_left, 0);
+        offset += data_sent;
+        bytes_left -= data_sent;
 
-        if(data_sent != data_size || data_sent == -1)
-            return 0;
+        if (data_sent == -1)
+            return 0; // Failure
     }
 
-    string termination_string = "\r\r\r\n\n\r";
-//    ::send(socket, termination_string.c_str(), strlen(termination_string.c_str()), 0);
-
-    return 1;
+    free(global_buffer);
+    return 1; // success
 }
 
 int SocketHandler::send(int socket, char *header) {
@@ -72,23 +67,20 @@ void SocketHandler::recieve(int socket, std::string &buffer) {
     string data = "";
     int bytesRead = 1;
 
-    while(bytesRead > 0)
+    while (bytesRead > 0)
     {
         char received_buffer[MESSAGE_SIZE] = {0};
 
         cout << "---Received Buffer(Before): " << received_buffer << endl;
         bytesRead = recv(socket, received_buffer, MESSAGE_SIZE, 0);
 
-        if(has_suffix(string(received_buffer), "\r\r\r\n\n\r"))
-        {
-            cout << "Termination Must have occured here!!!" << endl;
-        }
-
         data += string(received_buffer);
         cout << "---Received Buffer(After): " << received_buffer << endl;
+        if (has_suffix(string(received_buffer), "\r\n\r\n"))
+            break;
     }
 
     cout << "Terminated" << endl;
 
-   buffer = data;
+    buffer = data;
 }
