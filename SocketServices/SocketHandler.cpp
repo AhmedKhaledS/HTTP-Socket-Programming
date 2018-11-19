@@ -13,9 +13,10 @@ using namespace std;
 
 const int MESSAGE_SIZE = 1024;
 
+const string termination_string = "\r\n\r\n";
+
 int SocketHandler::send(int socket, char *header, char *data) {
 
-    string termination_string = "\r\n\r\n";
     int offset = strlen(header);
     int length = strlen(data) + strlen(header) + termination_string.length();
     int bytes_left = length;
@@ -76,9 +77,11 @@ void SocketHandler::recieve(int socket, std::string &buffer) {
 
         data += string(received_buffer);
         cout << "---Received Buffer(After): " << received_buffer << endl;
-        if (has_suffix(string(received_buffer), "\r\n\r\n"))
+        if (has_suffix(string(received_buffer), termination_string))
             break;
     }
+
+    data = data.substr(0, data.length() - termination_string.length());
 
     cout << "Terminated" << endl;
 
