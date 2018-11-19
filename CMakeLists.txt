@@ -29,7 +29,7 @@ add_executable(run  server/PostRequest.h
                     server/GetRequest.cpp
                     server/GetRequest.h
                     server/ConnectionHandler.h
-                    server/ConnectionHandler.cpp SocketServices/SocketHandler.cpp SocketServices/SocketHandler.h)
+                    server/ConnectionHandler.cpp socketServices/SocketHandler.cpp socketServices/SocketHandler.h)
 
 
 add_executable(runClient client/WebClient.cpp
@@ -38,6 +38,6 @@ add_executable(runClient client/WebClient.cpp
         fileServices/FileReader.h
         fileServices/FileWriter.cpp
         fileServices/FileWriter.h client/main.cpp client/RequestBuilder.cpp client/RequestBuilder.h client/response/ResponseHandler.cpp client/response/ResponseHandler.h client/response/Response.cpp client/response/Response.h client/StringUtils.cpp
-        SocketServices/SocketHandler.cpp SocketServices/SocketHandler.h)
+        socketServices/SocketHandler.cpp socketServices/SocketHandler.h)
 
 target_link_libraries(run ${Boost_LIBRARIES} -lrt)

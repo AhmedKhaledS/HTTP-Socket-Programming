@@ -8,8 +8,7 @@
 using namespace std;
 
 FileReader::FileReader()
-{
-}
+{}
 
 bool FileReader::file_exist(std::string path)
 {

@@ -16,7 +16,7 @@
 #include "RequestParser.h"
 #include "../fileServices/FileReader.h"
 #include "../fileServices/FileWriter.h"
-#include "../SocketServices/SocketHandler.h"
+#include "../socketServices/SocketHandler.h"
 
 
 using namespace std;
