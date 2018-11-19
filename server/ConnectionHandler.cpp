@@ -132,7 +132,7 @@ void ConnectionHandler::handle_request(char buffer_copy[], int socket_fd)
 //            send(socket_fd, cstr, (30000), 0);
             cout << "---Found Response: " << found_response << endl;
             cout << "---Content: " << mod_content << endl;
-            SocketHandler::send(socket_fd, found_response, mod_content);
+            SocketHandler::send(socket_fd, found_response, content);
         }
         else
         {
