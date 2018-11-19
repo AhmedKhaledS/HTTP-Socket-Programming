@@ -13,11 +13,12 @@ using namespace std;
 
 const int MESSAGE_SIZE = 1024;
 
-const string termination_string = "\r\n\r\n";
+const string termination_string = "END";
 
 int SocketHandler::send(int socket, char *header, string data) {
 
-    int offset = strlen(header);
+    int offset = 0;
+//            strlen(header);
     int length = data.size() + strlen(header) + termination_string.length();
     int bytes_left = length;
 
@@ -25,7 +26,7 @@ int SocketHandler::send(int socket, char *header, string data) {
     global_buffer += header;
     global_buffer += data;
     global_buffer += termination_string;
-
+    cout << "Global Buffer " << global_buffer << endl;
 //    char* global_buffer = (char*) malloc(sizeof(char) * 2048);
 //
 //    // Header
@@ -37,8 +38,8 @@ int SocketHandler::send(int socket, char *header, string data) {
 //
 ////    printf("header + data + termination: %s -> %d\n", global_buffer, strlen(global_buffer));
 
-    int sent_bytes = ::send(socket, global_buffer.c_str(), strlen(header), 0);
-    bytes_left -= sent_bytes;
+//    int sent_bytes = ::send(socket, global_buffer.c_str(), strlen(header), 0);
+//    bytes_left -= sent_bytes;
 
     while (bytes_left > 0)
     {
@@ -79,9 +80,11 @@ void SocketHandler::recieve(int socket, std::string &buffer) {
         cout << "---Received Buffer(Before): " << received_buffer << endl;
         bytesRead = recv(socket, received_buffer, MESSAGE_SIZE, 0);
 
-        data += string(received_buffer);
-        cout << "---Received Buffer(After): " << received_buffer << endl;
-        if (has_suffix(string(received_buffer), termination_string))
+        for (int i = 0; i < bytesRead; i++) {
+            data.push_back(received_buffer[i]);
+        }
+        cout << "---Received Buffer(After): " << data << endl;
+        if (has_suffix(string(data), termination_string))
             break;
     }
 

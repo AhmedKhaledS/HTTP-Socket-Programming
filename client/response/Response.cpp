@@ -21,7 +21,14 @@ void Response::parse_response(std::string response) {
     set_response_type(lines[0]);
     // room for parsing headers;
     if (lines.size() >= 1)
-        this->data = lines[lines.size() - 1];
+    {
+        for (int i = 1; i < lines.size(); i++)
+        {
+            this->data += lines[i];
+            if (i != lines.size() - 1)
+                this->data += "\r\n";
+        }
+    }
     return;
 }
 
