@@ -16,6 +16,7 @@
 #include <thread>
 #include "RequestBuilder.h"
 #include "response/ResponseHandler.h"
+#include "../SocketServices/SocketHandler.h"
 
 const int MAX_BUFF_SIZE = 50000;
 
@@ -32,11 +33,13 @@ void WebClient::post_file(std::string file_path, int socket_fd) {
 }
 
 std::string WebClient::receive_response(int socket) {
-    char buffer[MAX_BUFF_SIZE] = {0};
+//    char buffer[MAX_BUFF_SIZE] = {0};
+    string buffer = "";
     cout << "WAITING FOR RESPONSE" << endl;
-    read(socket, buffer, MAX_BUFF_SIZE);
-    cout << "GOT RESPONSE : " << string(buffer) << endl;
-    return string(buffer);
+//    read(socket, buffer, MAX_BUFF_SIZE);
+    SocketHandler::recieve(socket, buffer);
+    cout << "GOT RESPONSE : " << buffer << endl;
+    return buffer;
 }
 
 void WebClient::send_requests(std::string requests_file_name, std::string host_name, int port_number,
