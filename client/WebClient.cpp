@@ -16,7 +16,7 @@
 #include <thread>
 #include "RequestBuilder.h"
 #include "response/ResponseHandler.h"
-#include "../SocketServices/SocketHandler.h"
+#include "../socketServices/SocketHandler.h"
 
 const int MAX_BUFF_SIZE = 50000;
 

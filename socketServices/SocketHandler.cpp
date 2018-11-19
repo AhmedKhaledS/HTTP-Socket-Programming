@@ -18,9 +18,11 @@ int SocketHandler::send(int socket, char *header, char *data) {
     string termination_string = "\r\n\r\n";
     int offset = strlen(header);
     int length = strlen(data) + strlen(header) + termination_string.length();
+    printf("Data: %s\n", data);
+    printf("Length of message: %d\n", length);
     int bytes_left = length;
 
-    char* global_buffer = (char*) malloc(sizeof(char) * 2048);
+    char* global_buffer = (char*) malloc(sizeof(char) * MESSAGE_SIZE);
 
     // Header
     strcpy(global_buffer, header);
