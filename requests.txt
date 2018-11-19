@@ -1,1 +1,1 @@
-GET /test_version.txt hisham 40
+GET /png_version_1.png hisham 40
