@@ -24,7 +24,7 @@ RequestBuilder::RequestBuilder() {
 
 }
 
-std::string RequestBuilder::build_request_message(RequestCommand command) {
+std::string RequestBuilder::build_request_message(RequestCommand &command) {
     string request = "";
     request += (command.getType() == REQ_TYPE::GET ? "GET " : "POST ");
     request += (command.getFile_name());
@@ -34,13 +34,10 @@ std::string RequestBuilder::build_request_message(RequestCommand command) {
     request += HEADERS;
     if (command.getType() == REQ_TYPE::POST) {
         FileReader* reader = new FileReader();
-//        if (reader->file_exist(command.getFile_name()))
-            request += reader->read_file(command.getFile_name());
-//        else
-//        {
-//            perror("CANNOT ISSUE POST REQUEST : FILE NOT FOUND");
-//            exit(-1);
-//        }
+        if (reader->file_exist(command.getFile_name()))
+            command.setData(reader->read_file(command.getFile_name()));
+        else
+            perror("FILE NOT FOUND TO INCLUDE IN POST");
     }
     return request;
 }

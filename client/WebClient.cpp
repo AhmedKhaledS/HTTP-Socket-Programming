@@ -105,7 +105,7 @@ void WebClient::send_requests_non_persistent(std::vector<std::string> request_me
         int socket = connect(host_name, port_number);
         char msg[1024] = {0};
         strcpy(msg, message.c_str());
-        SocketHandler::send(socket, msg, "");
+        SocketHandler::send(socket, msg, commands[commands_index].getData());
         vector<string> response = receive_response(socket);
         ResponseHandler response_handler = ResponseHandler();
         response_handler.handle_response(response[0], commands[commands_index].getType(), commands[commands_index].getFile_name());
@@ -123,7 +123,7 @@ void WebClient::send_requests_persistent(std::vector<std::string> request_messag
     {
         char msg[1024] = {0};
         strcpy(msg, message.c_str());
-        SocketHandler::send(socket, msg, "");
+        SocketHandler::send(socket, msg, commands[commands_index].getData());
         vector<string> response = receive_response(socket);
         ResponseHandler response_handler = ResponseHandler();
         response_handler.handle_response(response[0], commands[commands_index].getType(), commands[commands_index].getFile_name());
@@ -149,23 +149,11 @@ void WebClient::send_requests_pipelined(std::vector<std::string> request_message
     int socket = connect(host_name, port_number);
     int commands_index = 0;
     vector<thread*> request_threads;
-//    for (string message : request_messages)
-//    {
-//        std::thread* request_thread = new thread(&WebClient::issue_request, this, message, commands[commands_index], socket);
-//        request_threads.push_back(request_thread);
-//        commands_index++;
-//    }
-//    for (thread* request_thread : request_threads)
-//    {
-//        request_thread->join();
-//        delete request_thread;
-//    }
-    string data = "";
     for (string message : request_messages)
     {
         char msg[1024] = {0};
         strcpy(msg, message.c_str());
-        SocketHandler::send(socket, msg, data);
+        SocketHandler::send(socket, msg, commands[commands_index].getData());
 
     }
     for (size_t i = 0; i < request_messages.size(); i++)
