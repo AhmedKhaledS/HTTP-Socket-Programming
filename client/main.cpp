@@ -10,6 +10,6 @@ using namespace std;
 int main()
 {
     WebClient client = WebClient();
-    client.send_requests("../requests.txt", "127.0.0.1", 8080, CONNECTION_TYPE::NON_PERSISTENT);
+    client.send_requests("../requests.txt", "127.0.0.1", 8080, CONNECTION_TYPE::PIPELINED);
     return 0;
 }

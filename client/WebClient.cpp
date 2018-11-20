@@ -23,6 +23,8 @@ const int MAX_BUFF_SIZE = 50000;
 using namespace std;
 
 
+mutex WebClient::lock;
+
 
 FILE *WebClient::get_file(std::string file_name, int socket_fd) {
     return nullptr;
@@ -134,6 +136,7 @@ void WebClient::send_requests_persistent(std::vector<std::string> request_messag
 
 void WebClient::issue_request(string message, RequestCommand command, int socket)
 {
+    lock.lock();
     cout << "Sending Request " << endl;
     send(socket, message.c_str(), strlen(message.c_str()), 0);
     string response = receive_response(socket);
@@ -141,6 +144,7 @@ void WebClient::issue_request(string message, RequestCommand command, int socket
     ResponseHandler response_handler = ResponseHandler();
     response_handler.handle_response(response, command.getType(), command.getFile_name());
     cout << "RESPONSE FOR " << message << "\n====\n" << response << endl;
+    lock.unlock();
 }
 
 void WebClient::send_requests_pipelined(std::vector<std::string> request_messages, std::vector<RequestCommand> commands,
@@ -153,10 +157,13 @@ void WebClient::send_requests_pipelined(std::vector<std::string> request_message
     {
         std::thread* request_thread = new thread(&WebClient::issue_request, this, message, commands[commands_index], socket);
         request_threads.push_back(request_thread);
+        cout << "--->Thread address: " << request_thread << "Message: " << message << "\n";
         commands_index++;
     }
+
     for (thread* request_thread : request_threads)
     {
+        cout << "XX--->Thread address: " << request_thread << endl;
         request_thread->join();
         delete request_thread;
     }

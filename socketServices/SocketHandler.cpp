@@ -22,22 +22,9 @@ int SocketHandler::send(int socket, char *header, string data) {
     int length = data.size() + strlen(header) + termination_string.length();
     int bytes_left = length;
 
-    string global_buffer = "";
-    global_buffer += header;
-    global_buffer += data;
-    global_buffer += termination_string;
+    string global_buffer = header + data + termination_string;
     cout << "Global Buffer " << global_buffer << endl;
 //    char* global_buffer = (char*) malloc(sizeof(char) * 2048);
-//
-//    // Header
-//    strcpy(global_buffer, header);
-//    strcat(global_buffer, data);
-////    cout << "test:buffer: " << global_buffer << endl;
-//    strcat(global_buffer, termination_string.c_str());
-////    cout << "test:buffer222: " << global_buffer << endl;
-//
-////    printf("header + data + termination: %s -> %d\n", global_buffer, strlen(global_buffer));
-
 //    int sent_bytes = ::send(socket, global_buffer.c_str(), strlen(header), 0);
 //    bytes_left -= sent_bytes;
 
@@ -51,7 +38,6 @@ int SocketHandler::send(int socket, char *header, string data) {
         if (data_sent == -1)
             return 0; // Failure
     }
-
     return 1; // success
 }
 

@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <mutex>
 #include "RequestCommand.h"
 
 enum CONNECTION_TYPE {PERSISTENT, PIPELINED, NON_PERSISTENT};
@@ -45,6 +46,7 @@ public:
             CONNECTION_TYPE connection_type);
 
 private:
+    static std::mutex lock;
     /**
      * Parses a request commands file and returns a list of Request Command objects.
      * @param file_name name of the request commands file
