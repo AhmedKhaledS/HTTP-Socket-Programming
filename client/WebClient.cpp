@@ -52,12 +52,13 @@ void WebClient::send_requests(std::string requests_file_name, std::string host_n
         send_requests_pipelined(request_messages, requests, host_name, port_number);
 }
 
-std::vector<std::string> WebClient::build_request_messages(std::vector<RequestCommand> commands) {
+std::vector<std::string> WebClient::build_request_messages(std::vector<RequestCommand> &commands) {
     vector<string> messages;
     RequestBuilder request_builder = RequestBuilder();
-    for (RequestCommand command : commands)
+    for (RequestCommand &command : commands)
     {
         messages.push_back(request_builder.build_request_message(command));
+        cout << "DEBUG: " << command.getData() << '\n';
     }
     return messages;
 }
@@ -108,6 +109,7 @@ void WebClient::send_requests_non_persistent(std::vector<std::string> request_me
         int socket = connect(host_name, port_number);
         char msg[1024] = {0};
         strcpy(msg, message.c_str());
+        cout << "Length: " << commands[commands_index].getData().length() << "\n";
         SocketHandler::send(socket, msg, commands[commands_index].getData());
         vector<string> response = receive_response(socket);
         ResponseHandler response_handler = ResponseHandler();

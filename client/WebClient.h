@@ -66,7 +66,7 @@ private:
      * @param commands list of request commands
      * @return vector of request messages
      */
-    std::vector<std::string> build_request_messages(std::vector<RequestCommand> commands);
+    std::vector<std::string> build_request_messages(std::vector<RequestCommand> &commands);
 
     /**
      * Connects to a server on given host and port and sends requests using non-persistent connections.

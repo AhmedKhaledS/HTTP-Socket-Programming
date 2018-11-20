@@ -24,22 +24,22 @@ Request* RequestParser::parse()
     {
         cout << lines_count++ << ": " << line << '\n';
         istringstream iss(line);
-        vector<string> splited_line(istream_iterator<std::string>{iss},
+        vector<string> splitted_line(istream_iterator<std::string>{iss},
                                     istream_iterator<std::string>());
         if (accept_body) // Body
-            msg_body += line;
-        else if (splited_line.size() > 2) // Request header
+            msg_body += line + "\r\n";
+        else if (splitted_line.size() > 2) // Request header
         {
-            this->request_type = splited_line[0];
-            this->requested_file_name = splited_line[1];
-            this->connection_type = splited_line[2];
+            this->request_type = splitted_line[0];
+            this->requested_file_name = splitted_line[1];
+            this->connection_type = splitted_line[2];
         }
-        else if (splited_line.size() == 2) // Header attributes
-            header_attributes[splited_line[0].substr(0, splited_line[0].length()-1)] = splited_line[1];
+        else if (splitted_line.size() == 2) // Header attributes
+            header_attributes[splitted_line[0].substr(0, splitted_line[0].length()-1)] = splitted_line[1];
         else if (line.empty())
             accept_body = true;
-
     }
+    msg_body = msg_body.substr(0, msg_body.length() - 2);
     return get_specified_request(msg_body);
 }
 

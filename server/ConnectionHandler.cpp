@@ -122,7 +122,6 @@ void ConnectionHandler::handle_request(string buffer, int socket_fd)
         if (file_reader->file_exist(file_path))
         {
             string content = file_reader->read_file(file_path);
-            char *mod_content = &content[0u];
             cout << "---Found Response: " << found_response << endl;
             cout << "---Content: " << content << endl;
             SocketHandler::send(socket_fd, found_response, content);

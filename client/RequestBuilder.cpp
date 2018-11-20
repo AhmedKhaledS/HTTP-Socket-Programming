@@ -34,9 +34,13 @@ std::string RequestBuilder::build_request_message(RequestCommand &command) {
     request += LINE_END;
     request += HEADERS;
     if (command.getType() == REQ_TYPE::POST) {
+        string directory = "../client/client_files";
         FileReader* reader = new FileReader();
-        if (reader->file_exist(command.getFile_name()))
-            command.setData(reader->read_file(command.getFile_name()));
+        if (reader->file_exist(directory + command.getFile_name()))
+        {
+            cout << "../client/client_files" + command.getFile_name() << '\n';
+            command.setData(reader->read_file(directory + command.getFile_name()));
+        }
         else
             perror("FILE NOT FOUND TO INCLUDE IN POST");
     }
