@@ -34,7 +34,7 @@ public:
      * @param socket socket to receive response from.
      * @return response
      */
-    std::string receive_response(int socket);
+    std::vector<std::string> receive_response(int socket);
     /**
      * Sends requests from a a given file containing list of requests.
      * @param requests_file_name name of the file containing requests
@@ -94,14 +94,6 @@ private:
      */
     void send_requests_pipelined(std::vector<std::string> request_messages, std::vector<RequestCommand> commands,
                                  std::string host_name, int port_number);
-
-    /**
-     *
-     * @param message
-     * @param command
-     * @param socket
-     */
-    void issue_request(std::string message, RequestCommand command, int socket);
 
     /**
      * Connects to a server on given host and port.
