@@ -4,6 +4,7 @@
 
 #include "RequestBuilder.h"
 #include "../fileServices/FileReader.h"
+#include <iostream>
 
 
 #define LINE_END "\r\n"
@@ -34,13 +35,7 @@ std::string RequestBuilder::build_request_message(RequestCommand command) {
     request += HEADERS;
     if (command.getType() == REQ_TYPE::POST) {
         FileReader* reader = new FileReader();
-//        if (reader->file_exist(command.getFile_name()))
-            request += reader->read_file(command.getFile_name());
-//        else
-//        {
-//            perror("CANNOT ISSUE POST REQUEST : FILE NOT FOUND");
-//            exit(-1);
-//        }
+        request += reader->read_file("../client/client_files" + command.getFile_name());
     }
     return request;
 }

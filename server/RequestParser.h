@@ -19,7 +19,7 @@ class RequestParser
         std::string requested_file_name;
         std::string connection_type;
 
-        Request* get_specified_request();
+        Request* get_specified_request(std::string msg_body);
     public:
         RequestParser(std::vector<std::string> message);
         Request* parse();

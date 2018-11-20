@@ -67,15 +67,14 @@ void SocketHandler::recieve(int socket, std::vector<std::string> &buffer) {
 
 //        cout << "---Received Buffer(Before): " << received_buffer << endl;
         bytesRead = recv(socket, received_buffer, MESSAGE_SIZE, 0);
-
-        for (int i = 0; i < bytesRead; i++) {
+//        cout << "Bytes read: " << bytesRead << "\n";
+        for (int i = 0; i < bytesRead; i++)
             data.push_back(received_buffer[i]);
-        }
 //        cout << "---Received Buffer(After): " << data << endl;
         if (has_suffix(string(data), termination_string))
             break;
     }
-    cout << "Data Before Splitting " << data << endl;
+//    cout << "Data Before Splitting " << data << endl;
     vector<string> messages = split_string(data, termination_string);
     messages.pop_back();
     buffer = messages;

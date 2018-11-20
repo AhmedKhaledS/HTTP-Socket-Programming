@@ -100,19 +100,21 @@ RequestCommand WebClient::parse_request_command_line(std::string request_line) {
 }
 
 void WebClient::send_requests_non_persistent(std::vector<std::string> request_messages, std::vector<RequestCommand> commands,
-        std::string host_name, int port_number) {
+        std::string host_name, int port_number)
+{
     int commands_index = 0;
     for (string message : request_messages)
     {
         int socket = connect(host_name, port_number);
         char msg[1024] = {0};
         strcpy(msg, message.c_str());
-        SocketHandler::send(socket, msg, "");
+        SocketHandler::send(socket, msg, commands[commands_index].);
         vector<string> response = receive_response(socket);
         ResponseHandler response_handler = ResponseHandler();
         response_handler.handle_response(response[0], commands[commands_index].getType(), commands[commands_index].getFile_name());
         cout << "RESPONSE FOR " << message << "\n====\n" << response[0] << endl;
         commands_index++;
+        close(socket);
     }
 }
 
@@ -132,6 +134,7 @@ void WebClient::send_requests_persistent(std::vector<std::string> request_messag
         cout << "RESPONSE FOR " << message << "\n====\n" << response[0] << endl;
         commands_index++;
     }
+    close(socket);
 }
 
 
@@ -169,7 +172,7 @@ void WebClient::send_requests_pipelined(std::vector<std::string> request_message
             response_handler.handle_response(resp, commands[i].getType(), commands[i].getFile_name());
         }
     }
-
+    close(socket);
 }
 
 

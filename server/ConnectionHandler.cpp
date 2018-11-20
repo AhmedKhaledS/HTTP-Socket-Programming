@@ -17,6 +17,7 @@
 #include "../fileServices/FileReader.h"
 #include "../fileServices/FileWriter.h"
 #include "../socketServices/SocketHandler.h"
+#include "../client/StringUtils.h"
 
 
 using namespace std;
@@ -51,9 +52,6 @@ void ConnectionHandler::handle(int socket_fd)
         for (string request : requests)
         {
             cout << "Requests : " << request.c_str() << endl;
-            char rq[BUFFER_SIZE] = {0};
-            strcpy(rq, request.c_str());
-            const char * r = rq;
             std::thread request_handler (&ConnectionHandler::handle_request, this, request, socket_fd);
             request_handler.detach();
         }
@@ -92,7 +90,6 @@ int sendall(char *buf, int *len, int s)
 
 void ConnectionHandler::handle_request(string buffer, int socket_fd)
 {
-//    lock.lock();
     const char* buffer_copy = buffer.c_str();
     cout << "--Reached Handler" << endl;
     printf("Buffer : %s\n", buffer_copy);
@@ -103,10 +100,8 @@ void ConnectionHandler::handle_request(string buffer, int socket_fd)
     std::vector<string> message_lines;
     if (buffer_copy != NULL)
     {
-        while(std::getline(ss,to,'\n')){
-            message_lines.push_back(to);
-        }
-        message_lines.pop_back();
+        message_lines = split_string(buffer, "\r\n");
+//        message_lines.pop_back();
     }
     // Get the file path
     RequestParser request_parser = RequestParser(message_lines);
@@ -114,7 +109,6 @@ void ConnectionHandler::handle_request(string buffer, int socket_fd)
 
     string resources_path = "../resources";
     string file_path = resources_path + request->get_file_name();
-
     char* found_response = "HTTP/1.1 200 OK\r\n";
     char* not_found_response = "HTTP/1.1 404 NOT_FOUND\r\n";
 
@@ -123,20 +117,12 @@ void ConnectionHandler::handle_request(string buffer, int socket_fd)
 
 
     // Check GET or POST ...
-    if(request->get_request_type() == "GET")
+    if (request->get_request_type() == "GET")
     {
-        if(file_reader->file_exist(file_path))
+        if (file_reader->file_exist(file_path))
         {
             string content = file_reader->read_file(file_path);
             char *mod_content = &content[0u];
-//            found_response += content;
-            // return found_response
-//            cout << "===SIZE=====" << found_response.length() << endl;
-//            char *cstr = new char[found_response.length() + 1];
-//            strcpy(cstr, found_response.c_str());
-//            int length = found_response.length();
-//            sendall(cstr, &length, socket_fd);
-//            send(socket_fd, cstr, (30000), 0);
             cout << "---Found Response: " << found_response << endl;
             cout << "---Content: " << content << endl;
             SocketHandler::send(socket_fd, found_response, content);
@@ -145,21 +131,18 @@ void ConnectionHandler::handle_request(string buffer, int socket_fd)
         {
             // return not_found_response
             cout << not_found_response << endl;
-//            printf("Again : %s\n", not_found_response.c_str());
-//            send(socket_fd, not_found_response.c_str(),
-//                 strlen(not_found_response.c_str()), 0);
-
+            SocketHandler::send(socket_fd, not_found_response, "");
         }
     }
     else if (request->get_request_type() == "POST")
     {
+        cout << "file path: " << file_path << " Content: " << request->get_content() << "\n";
         file_writer->write_file(file_path, request->get_content());
         // return found_response
         cout << found_response << endl;
-//        send(socket_fd, found_response.c_str(), strlen(found_response.c_str()), 0);
+        SocketHandler::send(socket_fd, found_response, "");
     }
 
     // handler thread goes here
     cout << "Ended Handler" << endl;
-//    lock.unlock();
 }

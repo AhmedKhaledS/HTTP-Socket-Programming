@@ -1,2 +1,1 @@
-GET /png_version_2.png hisham 40
-GET /png_version_1.png hisham 40
+POST /png_version_1.png hisham 40
