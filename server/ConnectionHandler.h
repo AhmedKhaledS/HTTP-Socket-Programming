@@ -25,7 +25,7 @@ public:
     void handle(int socket_fd);
 
 private:
-    void handle_request(char buffer_copy[], int socket_fd);
+    void handle_request(std::string buffer, int socket_fd);
     int get_process_index(shared_vector *running_processes);
     static std::mutex lock;
 };

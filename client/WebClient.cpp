@@ -32,14 +32,10 @@ void WebClient::post_file(std::string file_path, int socket_fd) {
 
 }
 
-std::string WebClient::receive_response(int socket) {
-//    char buffer[MAX_BUFF_SIZE] = {0};
-    string buffer = "";
-    cout << "WAITING FOR RESPONSE" << endl;
-//    read(socket, buffer, MAX_BUFF_SIZE);
-    SocketHandler::recieve(socket, buffer);
-    cout << "GOT RESPONSE : " << buffer << endl;
-    return buffer;
+std::vector<std::string> WebClient::receive_response(int socket) {
+    vector<string> responses;
+    SocketHandler::recieve(socket, responses);
+    return responses;
 }
 
 void WebClient::send_requests(std::string requests_file_name, std::string host_name, int port_number,
@@ -107,11 +103,13 @@ void WebClient::send_requests_non_persistent(std::vector<std::string> request_me
     for (string message : request_messages)
     {
         int socket = connect(host_name, port_number);
-        send(socket, message.c_str(), strlen(message.c_str()), 0);
-        string response = receive_response(socket);
+        char msg[1024] = {0};
+        strcpy(msg, message.c_str());
+        SocketHandler::send(socket, msg, "");
+        vector<string> response = receive_response(socket);
         ResponseHandler response_handler = ResponseHandler();
-        response_handler.handle_response(response, commands[commands_index].getType(), commands[commands_index].getFile_name());
-        cout << "RESPONSE FOR " << message << "\n====\n" << response << endl;
+        response_handler.handle_response(response[0], commands[commands_index].getType(), commands[commands_index].getFile_name());
+        cout << "RESPONSE FOR " << message << "\n====\n" << response[0] << endl;
         commands_index++;
     }
 }
@@ -123,11 +121,13 @@ void WebClient::send_requests_persistent(std::vector<std::string> request_messag
     int commands_index = 0;
     for (string message : request_messages)
     {
-        send(socket, message.c_str(), strlen(message.c_str()), 0);
-        string response = receive_response(socket);
+        char msg[1024] = {0};
+        strcpy(msg, message.c_str());
+        SocketHandler::send(socket, msg, "");
+        vector<string> response = receive_response(socket);
         ResponseHandler response_handler = ResponseHandler();
-        response_handler.handle_response(response, commands[commands_index].getType(), commands[commands_index].getFile_name());
-        cout << "RESPONSE FOR " << message << "\n====\n" << response << endl;
+        response_handler.handle_response(response[0], commands[commands_index].getType(), commands[commands_index].getFile_name());
+        cout << "RESPONSE FOR " << message << "\n====\n" << response[0] << endl;
         commands_index++;
     }
 }
@@ -136,11 +136,11 @@ void WebClient::issue_request(string message, RequestCommand command, int socket
 {
     cout << "Sending Request " << endl;
     send(socket, message.c_str(), strlen(message.c_str()), 0);
-    string response = receive_response(socket);
-    cout << " Length : ===== " << response.length() << endl;
+    vector<string> response = receive_response(socket);
+    cout << " Length : ===== " << response[0].length() << endl;
     ResponseHandler response_handler = ResponseHandler();
-    response_handler.handle_response(response, command.getType(), command.getFile_name());
-    cout << "RESPONSE FOR " << message << "\n====\n" << response << endl;
+    response_handler.handle_response(response[0], command.getType(), command.getFile_name());
+    cout << "RESPONSE FOR " << message << "\n====\n" << response[0] << endl;
 }
 
 void WebClient::send_requests_pipelined(std::vector<std::string> request_messages, std::vector<RequestCommand> commands,
@@ -149,16 +149,33 @@ void WebClient::send_requests_pipelined(std::vector<std::string> request_message
     int socket = connect(host_name, port_number);
     int commands_index = 0;
     vector<thread*> request_threads;
+//    for (string message : request_messages)
+//    {
+//        std::thread* request_thread = new thread(&WebClient::issue_request, this, message, commands[commands_index], socket);
+//        request_threads.push_back(request_thread);
+//        commands_index++;
+//    }
+//    for (thread* request_thread : request_threads)
+//    {
+//        request_thread->join();
+//        delete request_thread;
+//    }
+    string data = "";
     for (string message : request_messages)
     {
-        std::thread* request_thread = new thread(&WebClient::issue_request, this, message, commands[commands_index], socket);
-        request_threads.push_back(request_thread);
-        commands_index++;
+        char msg[1024] = {0};
+        strcpy(msg, message.c_str());
+        SocketHandler::send(socket, msg, data);
+
     }
-    for (thread* request_thread : request_threads)
+    for (size_t i = 0; i < request_messages.size(); i++)
     {
-        request_thread->join();
-        delete request_thread;
+        cout << "Resp " << i << " ";
+        for (string resp : receive_response(socket))
+        {
+            ResponseHandler response_handler = ResponseHandler();
+            response_handler.handle_response(resp, commands[i].getType(), commands[i].getFile_name());
+        }
     }
 
 }

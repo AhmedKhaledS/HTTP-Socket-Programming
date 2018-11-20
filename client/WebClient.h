@@ -33,7 +33,7 @@ public:
      * @param socket socket to receive response from.
      * @return response
      */
-    std::string receive_response(int socket);
+    std::vector<std::string> receive_response(int socket);
     /**
      * Sends requests from a a given file containing list of requests.
      * @param requests_file_name name of the file containing requests

@@ -29,7 +29,11 @@ add_executable(run  server/PostRequest.h
                     server/GetRequest.cpp
                     server/GetRequest.h
                     server/ConnectionHandler.h
-                    server/ConnectionHandler.cpp socketServices/SocketHandler.cpp socketServices/SocketHandler.h)
+                    server/ConnectionHandler.cpp
+                    socketServices/SocketHandler.cpp
+                    socketServices/SocketHandler.h
+                    client/StringUtils.h
+                    client/StringUtils.cpp)
 
 
 add_executable(runClient client/WebClient.cpp

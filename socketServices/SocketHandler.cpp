@@ -3,6 +3,7 @@
 //
 
 #include "SocketHandler.h"
+#include "../client/StringUtils.h"
 
 #include <string.h>
 #include <sys/socket.h>
@@ -13,10 +14,13 @@ using namespace std;
 
 const int MESSAGE_SIZE = 1024;
 
-const string termination_string = "END";
+const string termination_string = "MSGEND";
+
+mutex SocketHandler::lock;
 
 int SocketHandler::send(int socket, char *header, string data) {
 
+    lock.lock();
     int offset = 0;
 //            strlen(header);
     int length = data.size() + strlen(header) + termination_string.length();
@@ -26,20 +30,7 @@ int SocketHandler::send(int socket, char *header, string data) {
     global_buffer += header;
     global_buffer += data;
     global_buffer += termination_string;
-    cout << "Global Buffer " << global_buffer << endl;
-//    char* global_buffer = (char*) malloc(sizeof(char) * 2048);
-//
-//    // Header
-//    strcpy(global_buffer, header);
-//    strcat(global_buffer, data);
-////    cout << "test:buffer: " << global_buffer << endl;
-//    strcat(global_buffer, termination_string.c_str());
-////    cout << "test:buffer222: " << global_buffer << endl;
-//
-////    printf("header + data + termination: %s -> %d\n", global_buffer, strlen(global_buffer));
-
-//    int sent_bytes = ::send(socket, global_buffer.c_str(), strlen(header), 0);
-//    bytes_left -= sent_bytes;
+    cout << "Global Buffer " << global_buffer << "\n";
 
     while (bytes_left > 0)
     {
@@ -51,7 +42,7 @@ int SocketHandler::send(int socket, char *header, string data) {
         if (data_sent == -1)
             return 0; // Failure
     }
-
+    lock.unlock();
     return 1; // success
 }
 
@@ -67,7 +58,7 @@ bool has_suffix(const std::string &str, const std::string &suffix)
            str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
 
-void SocketHandler::recieve(int socket, std::string &buffer) {
+void SocketHandler::recieve(int socket, std::vector<std::string> &buffer) {
 
     // Receiving Data
     string data = "";
@@ -77,20 +68,27 @@ void SocketHandler::recieve(int socket, std::string &buffer) {
     {
         char received_buffer[MESSAGE_SIZE] = {0};
 
-        cout << "---Received Buffer(Before): " << received_buffer << endl;
+//        cout << "---Received Buffer(Before): " << received_buffer << endl;
         bytesRead = recv(socket, received_buffer, MESSAGE_SIZE, 0);
 
         for (int i = 0; i < bytesRead; i++) {
             data.push_back(received_buffer[i]);
         }
-        cout << "---Received Buffer(After): " << data << endl;
+//        cout << "---Received Buffer(After): " << data << endl;
         if (has_suffix(string(data), termination_string))
             break;
     }
+    cout << "Data Before Splitting " << data << endl;
+    vector<string> messages = split_string(data, termination_string);
+//    for (int i = 0; i < messages.size(); i++)
+//    {
+//        if (messages[i] == termination_string || messages[i].empty())
+//        {
+//            messages.erase(messages.begin() + i);
+//        }
+//    }
+    messages.pop_back();
+//    data = data.substr(0, data.length() - termination_string.length());
 
-    data = data.substr(0, data.length() - termination_string.length());
-
-    cout << "Terminated" << endl;
-
-    buffer = data;
+    buffer = messages;
 }

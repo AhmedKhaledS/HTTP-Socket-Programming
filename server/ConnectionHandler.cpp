@@ -37,18 +37,26 @@ void ConnectionHandler::handle(int socket_fd)
     while (true)
     {
         // read request -> parse request -> create request handler in a thread
-        char buffer[BUFFER_SIZE] = {0};
-        read(socket_fd, buffer, BUFFER_SIZE);
-        char buffer_copy[BUFFER_SIZE];
-        strcpy(buffer_copy, buffer);
-
+//        char buffer[BUFFER_SIZE] = {0};
+//        read(socket_fd, buffer, BUFFER_SIZE);
+//        char buffer_copy[BUFFER_SIZE];
+//        strcpy(buffer_copy, buffer);
+        std::vector<string> requests;
+        SocketHandler::recieve(socket_fd, requests);
         // Updating the time for the last request in this connection.
         (*running_processes)[process_index].second = static_cast<long long>(time(NULL));
 
         // Here we create the handler threads.
 //         handle_request(buffer_copy, socket_fd);
-        std::thread first (&ConnectionHandler::handle_request, this, buffer_copy, socket_fd);
-        first.detach();
+        for (string request : requests)
+        {
+            cout << "Requests : " << request.c_str() << endl;
+            char rq[BUFFER_SIZE] = {0};
+            strcpy(rq, request.c_str());
+            const char * r = rq;
+            std::thread request_handler (&ConnectionHandler::handle_request, this, request, socket_fd);
+            request_handler.detach();
+        }
     }
     return;
 }
@@ -82,10 +90,12 @@ int sendall(char *buf, int *len, int s)
     return n==-1?-1:0; // return -1 onm failure, 0 on success
 }
 
-void ConnectionHandler::handle_request(char buffer_copy[], int socket_fd)
+void ConnectionHandler::handle_request(string buffer, int socket_fd)
 {
-    lock.lock();
+//    lock.lock();
+    const char* buffer_copy = buffer.c_str();
     cout << "--Reached Handler" << endl;
+    printf("Buffer : %s\n", buffer_copy);
 
     // Convert the buffer to vector of strings
     std::stringstream ss(buffer_copy);
@@ -94,18 +104,16 @@ void ConnectionHandler::handle_request(char buffer_copy[], int socket_fd)
     if (buffer_copy != NULL)
     {
         while(std::getline(ss,to,'\n')){
-           message_lines.push_back(to);
+            message_lines.push_back(to);
         }
         message_lines.pop_back();
     }
-    printf("Biuffer : %s\n", buffer_copy);
     // Get the file path
     RequestParser request_parser = RequestParser(message_lines);
     Request* request = request_parser.parse();
 
     string resources_path = "../resources";
     string file_path = resources_path + request->get_file_name();
-    cout << file_path << endl;
 
     char* found_response = "HTTP/1.1 200 OK\r\n";
     char* not_found_response = "HTTP/1.1 404 NOT_FOUND\r\n";
@@ -113,7 +121,6 @@ void ConnectionHandler::handle_request(char buffer_copy[], int socket_fd)
     FileReader* file_reader = new FileReader();
     FileWriter* file_writer = new FileWriter();
 
-    printf("File Name %s \n", request->get_file_name().c_str());
 
     // Check GET or POST ...
     if(request->get_request_type() == "GET")
@@ -131,7 +138,7 @@ void ConnectionHandler::handle_request(char buffer_copy[], int socket_fd)
 //            sendall(cstr, &length, socket_fd);
 //            send(socket_fd, cstr, (30000), 0);
             cout << "---Found Response: " << found_response << endl;
-            cout << "---Content: " << mod_content << endl;
+            cout << "---Content: " << content << endl;
             SocketHandler::send(socket_fd, found_response, content);
         }
         else
@@ -154,5 +161,5 @@ void ConnectionHandler::handle_request(char buffer_copy[], int socket_fd)
 
     // handler thread goes here
     cout << "Ended Handler" << endl;
-    lock.unlock();
+//    lock.unlock();
 }

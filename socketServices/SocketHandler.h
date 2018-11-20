@@ -6,14 +6,18 @@
 #define HTTP_CLIENT_SERVER_SOCKETHANDLER_H
 
 #include <string>
+#include <mutex>
+#include <vector>
 
 class SocketHandler {
 
-    public:
-        static int send (int socket, char* header, std::string data);
-        static int send (int socket, char* header);
-        static void recieve (int socket, std::string &buffer);
+public:
+    static int send (int socket, char* header, std::string data);
+    static int send (int socket, char* header);
+    static void recieve (int socket, std::vector<std::string> &buffer);
 
+private:
+    static std::mutex lock;
 };
 
 
