@@ -18,7 +18,7 @@ public:
      * @param command request command object containing request args
      * @return string containing the request
      */
-    std::string build_request_message(RequestCommand command);
+    std::string build_request_message(RequestCommand &command);
 private:
 };
 

@@ -55,3 +55,11 @@ void RequestCommand::display_request_args() {
     std::cout << host_name << std::endl;
     std::cout << port_number << std::endl;
 }
+
+const std::string &RequestCommand::getData() const {
+    return data;
+}
+
+void RequestCommand::setData(const std::string &data) {
+    RequestCommand::data = data;
+}

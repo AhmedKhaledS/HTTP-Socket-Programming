@@ -35,11 +35,16 @@ public:
 
     void display_request_args();
 
+    const std::string &getData() const;
+
+    void setData(const std::string &data);
+
 private:
     REQ_TYPE type;
     std::string file_name;
     std::string host_name;
     int port_number = -1;
+    std::string data;
 };
 
 
