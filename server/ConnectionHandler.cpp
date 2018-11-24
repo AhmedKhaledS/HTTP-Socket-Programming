@@ -103,6 +103,7 @@ void ConnectionHandler::handle_request(string buffer, int socket_fd)
             string content = file_reader->read_file(file_path);
             cout << "---Found Response: " << found_response << endl;
             cout << "---Content: " << content << endl;
+            char* found_response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=utf-8\r\n\r\n";
             SocketHandler::send(socket_fd, found_response, content);
         }
         else

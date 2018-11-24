@@ -30,9 +30,16 @@ Request* RequestParser::parse()
             msg_body += line + "\r\n";
         else if (splitted_line.size() > 2) // Request header
         {
+            if(splitted_line[0] != "GET" && splitted_line[0] != "POST")
+                continue;
+
+
+
             this->request_type = splitted_line[0];
             this->requested_file_name = splitted_line[1];
             this->connection_type = splitted_line[2];
+
+            cout << "REQUEST TYPE:" << this->request_type << endl;
         }
         else if (splitted_line.size() == 2) // Header attributes
             header_attributes[splitted_line[0].substr(0, splitted_line[0].length()-1)] = splitted_line[1];

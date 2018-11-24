@@ -14,7 +14,7 @@ using namespace std;
 
 const int MESSAGE_SIZE = 1024;
 
-const string termination_string = "MSGEND";
+const string termination_string = "\r\n\r\n";
 
 mutex SocketHandler::lock;
 
@@ -65,17 +65,23 @@ void SocketHandler::recieve(int socket, std::vector<std::string> &buffer) {
     {
         char received_buffer[MESSAGE_SIZE] = {0};
 
-//        cout << "---Received Buffer(Before): " << received_buffer << endl;
+        cout << "---Received Buffer(Before): " << received_buffer << endl;
         bytesRead = recv(socket, received_buffer, MESSAGE_SIZE, 0);
-//        cout << "Bytes read: " << bytesRead << "\n";
+        cout << "Bytes read: " << bytesRead << "\n";
         for (int i = 0; i < bytesRead; i++)
             data.push_back(received_buffer[i]);
-//        cout << "---Received Buffer(After): " << data << endl;
-        if (has_suffix(string(data), termination_string))
+        cout << "---Received Buffer(After): " << data << endl;
+        if (has_suffix(string(data), termination_string) ||
+                has_suffix(string(data), "\r\n\r\n"))
             break;
     }
 //    cout << "Data Before Splitting " << data << endl;
     vector<string> messages = split_string(data, termination_string);
     messages.pop_back();
+
+    cout << "SIZE:" << messages.size() << endl;
+    for(int i = 0; i < messages.size(); i++)
+        cout << "MESSAGE:" << messages[i] << endl;
+
     buffer = messages;
 }
