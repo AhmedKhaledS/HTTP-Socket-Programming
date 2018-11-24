@@ -26,7 +26,10 @@ const int BUFFER_SIZE = 1024;
 
 mutex ConnectionHandler::lock;
 
-ConnectionHandler::ConnectionHandler() {}
+ConnectionHandler::ConnectionHandler()
+{
+    allowPost = false;
+}
 
 
 void ConnectionHandler::handle(int socket_fd)
@@ -37,18 +40,12 @@ void ConnectionHandler::handle(int socket_fd)
 
     while (true)
     {
-        // read request -> parse request -> create request handler in a thread
-//        char buffer[BUFFER_SIZE] = {0};
-//        read(socket_fd, buffer, BUFFER_SIZE);
-//        char buffer_copy[BUFFER_SIZE];
-//        strcpy(buffer_copy, buffer);
         std::vector<string> requests;
         SocketHandler::recieve(socket_fd, requests);
         // Updating the time for the last request in this connection.
         (*running_processes)[process_index].second = static_cast<long long>(time(NULL));
 
         // Here we create the handler threads.
-//         handle_request(buffer_copy, socket_fd);
         for (string request : requests)
         {
             cout << "Requests : " << request.c_str() << endl;
@@ -70,24 +67,6 @@ int ConnectionHandler::get_process_index(shared_vector *running_processes)
 }
 
 
-int sendall(char *buf, int *len, int s)
-{
-    size_t total = 0;        // how many bytes we've sent
-    int  bytes_left = *len; // how many we have left to send
-    size_t  n;
-
-    while(total < *len) {
-        n = send(s, buf+total, bytes_left, 0);
-        if (n == -1) { break; }
-        total += n;
-        bytes_left -= n;
-    }
-
-    *len = total; // return number actually sent here
-
-    return n==-1?-1:0; // return -1 onm failure, 0 on success
-}
-
 void ConnectionHandler::handle_request(string buffer, int socket_fd)
 {
     const char* buffer_copy = buffer.c_str();
@@ -101,8 +80,8 @@ void ConnectionHandler::handle_request(string buffer, int socket_fd)
     if (buffer_copy != NULL)
     {
         message_lines = split_string(buffer, "\r\n");
-//        message_lines.pop_back();
     }
+
     // Get the file path
     RequestParser request_parser = RequestParser(message_lines);
     Request* request = request_parser.parse();
@@ -135,11 +114,22 @@ void ConnectionHandler::handle_request(string buffer, int socket_fd)
     }
     else if (request->get_request_type() == "POST")
     {
-        cout << "file path: " << file_path << " Content: " << request->get_content() << "\n";
-        file_writer->write_file(file_path, request->get_content());
-        // return found_response
-        cout << found_response << endl;
-        SocketHandler::send(socket_fd, found_response, "");
+        if(request->get_content() == "")
+        {
+            allowPost = true;
+            cout << "Sending ACK to client to send data";
+            SocketHandler::send(socket_fd, found_response, "");
+        }
+        else if(allowPost)
+        {
+            allowPost = false;
+            cout << "file path: " << file_path << " Content: " << request->get_content() << "\n";
+            file_writer->write_file(file_path, request->get_content());
+            // return found_response
+            cout << found_response << endl;
+            SocketHandler::send(socket_fd, found_response, "");
+        }
+
     }
 
     // handler thread goes here

@@ -28,6 +28,7 @@ private:
     void handle_request(std::string buffer, int socket_fd);
     int get_process_index(shared_vector *running_processes);
     static std::mutex lock;
+    bool allowPost;
 };
 
 #endif //HTTP_CLIENT_SERVER_CONNECTIONHANDLER_H

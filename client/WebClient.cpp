@@ -110,8 +110,22 @@ void WebClient::send_requests_non_persistent(std::vector<std::string> request_me
         char msg[1024] = {0};
         strcpy(msg, message.c_str());
         cout << "Length: " << commands[commands_index].getData().length() << "\n";
-        SocketHandler::send(socket, msg, commands[commands_index].getData());
-        vector<string> response = receive_response(socket);
+        SocketHandler::send(socket, msg, "");
+        vector<string> response;
+        if(commands[commands_index].getType() == REQ_TYPE::POST)
+        {
+            response = receive_response(socket);
+            Response parsed_response(response[0]);
+            if(parsed_response.getResponse_type() == RES_TYPE::OKAY)
+                SocketHandler::send(socket, msg, commands[commands_index].getData());
+            else
+            {
+                commands_index++;
+                close(socket);
+                continue;
+            }
+        }
+        response = receive_response(socket);
         ResponseHandler response_handler = ResponseHandler();
         response_handler.handle_response(response[0], commands[commands_index].getType(), commands[commands_index].getFile_name());
         cout << "RESPONSE FOR " << message << "\n====\n" << response[0] << endl;
@@ -129,8 +143,23 @@ void WebClient::send_requests_persistent(std::vector<std::string> request_messag
     {
         char msg[1024] = {0};
         strcpy(msg, message.c_str());
-        SocketHandler::send(socket, msg, commands[commands_index].getData());
-        vector<string> response = receive_response(socket);
+
+        SocketHandler::send(socket, msg, "");
+        vector<string> response;
+        if(commands[commands_index].getType() == REQ_TYPE::POST)
+        {
+            response = receive_response(socket);
+            Response parsed_response(response[0]);
+            if(parsed_response.getResponse_type() == RES_TYPE::OKAY)
+                SocketHandler::send(socket, msg, commands[commands_index].getData());
+            else
+            {
+                commands_index++;
+                continue;
+            }
+        }
+        response = receive_response(socket);
+        
         ResponseHandler response_handler = ResponseHandler();
         response_handler.handle_response(response[0], commands[commands_index].getType(), commands[commands_index].getFile_name());
         cout << "RESPONSE FOR " << message << "\n====\n" << response[0] << endl;
