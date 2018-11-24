@@ -18,17 +18,29 @@
 #include "../fileServices/FileWriter.h"
 #include "../socketServices/SocketHandler.h"
 #include "../client/StringUtils.h"
+#include <signal.h>
+
 
 
 using namespace std;
 
 const int BUFFER_SIZE = 1024;
 
+
 mutex ConnectionHandler::lock;
 
 ConnectionHandler::ConnectionHandler()
 {
     allowPost = false;
+}
+
+bool isConnected(int socket_fd)
+{
+    int optval;
+    socklen_t optlen = sizeof(optval);
+    int res = getsockopt(socket_fd, SOL_SOCKET, SO_ERROR, &optval,  &optlen);
+    if (optval == 0 && res == 0)  return true;
+    return false;
 }
 
 
@@ -40,6 +52,8 @@ void ConnectionHandler::handle(int socket_fd)
 
     while (true)
     {
+//        if(!isConnected(socket_fd))
+//            exit(0);
         std::vector<string> requests;
         SocketHandler::recieve(socket_fd, requests);
         // Updating the time for the last request in this connection.
@@ -53,7 +67,6 @@ void ConnectionHandler::handle(int socket_fd)
             request_handler.detach();
         }
     }
-    return;
 }
 
 int ConnectionHandler::get_process_index(shared_vector *running_processes)
@@ -103,7 +116,7 @@ void ConnectionHandler::handle_request(string buffer, int socket_fd)
             string content = file_reader->read_file(file_path);
             cout << "---Found Response: " << found_response << endl;
             cout << "---Content: " << content << endl;
-            char* found_response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=utf-8\r\n\r\n";
+//            char* found_response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain; charset=utf-8\r\n\r\n";
             SocketHandler::send(socket_fd, found_response, content);
         }
         else

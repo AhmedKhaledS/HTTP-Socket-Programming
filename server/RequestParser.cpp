@@ -33,8 +33,6 @@ Request* RequestParser::parse()
             if(splitted_line[0] != "GET" && splitted_line[0] != "POST")
                 continue;
 
-
-
             this->request_type = splitted_line[0];
             this->requested_file_name = splitted_line[1];
             this->connection_type = splitted_line[2];
